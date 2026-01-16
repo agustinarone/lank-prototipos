@@ -1,0 +1,72 @@
+<!-- 
+  EJEMPLO DE PROTOTIPO
+  Este es un ejemplo de cómo crear un prototipo dentro del frame móvil.
+  
+  Para crear un nuevo prototipo:
+  1. Crea un nuevo archivo HTML (ej: prototipo-1.html)
+  2. Copia el contenido del div con clase "prototype-content" de este archivo
+  3. Reemplaza el contenido del div #prototype-container en index.html con tu prototipo
+  4. O mejor aún, crea un sistema de routing simple para cambiar entre prototipos
+-->
+
+<div class="prototype-content">
+    <div class="prototype-header">
+        <h2>Ejemplo de Prototipo</h2>
+    </div>
+    
+    <div class="prototype-body">
+        <div class="card">
+            <h3>Título de Card</h3>
+            <p>Contenido del prototipo aquí</p>
+        </div>
+        
+        <div class="card">
+            <h3>Otra Card</h3>
+            <p>Puedes agregar cualquier contenido HTML/CSS/JS</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.prototype-content {
+    padding: 20px;
+    min-height: 100%;
+}
+
+.prototype-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.prototype-header h2 {
+    font-size: 20px;
+    color: rgb(66, 66, 178);
+    font-weight: 600;
+}
+
+.prototype-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card {
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.card p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+</style>
