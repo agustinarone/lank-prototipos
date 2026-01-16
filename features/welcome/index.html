@@ -1,0 +1,55 @@
+<div class="welcome-message">
+    <h1>Bienvenido a Lank Prototipos</h1>
+    <p>Selecciona una feature para comenzar</p>
+    <div class="welcome-instructions">
+        <p><strong>Atajos de teclado:</strong></p>
+        <p>Presiona <kbd>Ctrl/Cmd + K</kbd> para abrir el selector de features</p>
+    </div>
+</div>
+
+<style>
+.welcome-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.welcome-message h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: rgb(66, 66, 178);
+}
+
+.welcome-message p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.welcome-instructions {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    max-width: 300px;
+}
+
+.welcome-instructions p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+kbd {
+    background: #e0e0e0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
