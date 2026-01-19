@@ -12,6 +12,11 @@ const FEATURES = {
         path: 'features/aprobracion-grupos-ia/index.html',
         description: 'Flujo completo de creación y aprobación de grupos con validación automática'
     },
+    'extracciones-tupay': {
+        name: 'Agregar Cuenta PE (Tupay)',
+        path: 'features/extracciones-tupay/index.html',
+        description: 'Formulario de creación de cuenta payout con selector de tipo de documento y validaciones'
+    },
 };
 
 // Feature por defecto

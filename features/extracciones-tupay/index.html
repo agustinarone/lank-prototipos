@@ -1,0 +1,771 @@
+<!-- Prototipo: Agregar una cuenta (PE) - Extracciones Tupay -->
+<div class="tupay-feature" id="tupay-app">
+    <!-- Las pantallas se renderizan dinámicamente aquí -->
+</div>
+
+<style>
+/* ========================================
+   VARIABLES Y RESET
+======================================== */
+.tupay-feature {
+    --primary: #4242B2;
+    --primary-light: #5c5cc7;
+    --orange: #F5A623;
+    --orange-dark: #e09520;
+    --success: #22C55E;
+    --error: #EF4444;
+    --gray-50: #FAFAFA;
+    --gray-100: #F5F5F5;
+    --gray-200: #E5E5E5;
+    --gray-300: #D4D4D4;
+    --gray-400: #A3A3A3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --gray-900: #171717;
+    
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--gray-50);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tupay-feature * {
+    box-sizing: border-box;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+.tupay-header {
+    background: white;
+    padding: 20px 24px 16px;
+    border-bottom: 2px solid var(--primary);
+}
+
+.tupay-header-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--primary);
+    text-align: center;
+    margin: 0;
+}
+
+/* ========================================
+   CONTENIDO
+======================================== */
+.tupay-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================================
+   BACK BUTTON
+======================================== */
+.tupay-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--orange);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.tupay-back-btn:hover {
+    opacity: 0.8;
+}
+
+/* ========================================
+   FORM FIELDS
+======================================== */
+.tupay-form-group {
+    margin-bottom: 20px;
+}
+
+.tupay-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.tupay-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--gray-300);
+    border-radius: 24px;
+    font-size: 15px;
+    color: var(--gray-700);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tupay-input::placeholder {
+    color: var(--gray-400);
+}
+
+.tupay-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(66, 66, 178, 0.1);
+}
+
+.tupay-input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.tupay-input.success {
+    border-color: var(--success);
+}
+
+/* Select (dropdown) */
+.tupay-select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--gray-300);
+    border-radius: 24px;
+    font-size: 15px;
+    color: var(--gray-700);
+    background: white;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23737373' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 5.646a.5.5 0 0 1 .708 0L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.tupay-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(66, 66, 178, 0.1);
+}
+
+/* ========================================
+   ERROR MESSAGE
+======================================== */
+.tupay-error-msg {
+    display: none;
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 6px;
+    padding-left: 16px;
+}
+
+.tupay-error-msg.visible {
+    display: block;
+}
+
+/* ========================================
+   HINT / HELP TEXT
+======================================== */
+.tupay-hint {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 6px;
+    padding-left: 16px;
+}
+
+.tupay-hint-link {
+    color: var(--orange);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tupay-hint-link:hover {
+    text-decoration: underline;
+}
+
+/* ========================================
+   BUTTONS
+======================================== */
+.tupay-btn {
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-align: center;
+}
+
+.tupay-btn-primary {
+    background: var(--gray-400);
+    color: white;
+    pointer-events: none;
+}
+
+.tupay-btn-primary.enabled {
+    background: var(--gray-600);
+    pointer-events: auto;
+}
+
+.tupay-btn-primary.enabled:hover {
+    background: var(--gray-700);
+}
+
+.tupay-btn-link {
+    background: none;
+    color: var(--primary);
+    text-decoration: underline;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px;
+    cursor: pointer;
+    border: none;
+}
+
+.tupay-btn-link:hover {
+    opacity: 0.8;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+.tupay-footer {
+    padding: 16px 20px 24px;
+    background: var(--gray-50);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ========================================
+   SUCCESS SCREEN
+======================================== */
+.tupay-success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #DCFCE7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 40px auto 24px;
+}
+
+.tupay-success-icon svg {
+    width: 40px;
+    height: 40px;
+    color: var(--success);
+}
+
+.tupay-success-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-900);
+    text-align: center;
+    margin: 0 0 8px 0;
+}
+
+.tupay-success-subtitle {
+    font-size: 14px;
+    color: var(--gray-500);
+    text-align: center;
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+}
+
+/* ========================================
+   MICROCOPY / INFO BOX
+======================================== */
+.tupay-info-box {
+    background: #FFF7ED;
+    border: 1px solid #FED7AA;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.tupay-info-box-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tupay-info-box-text {
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.5;
+}
+
+/* ========================================
+   DIGIT COUNTER
+======================================== */
+.tupay-digit-counter {
+    font-size: 12px;
+    color: var(--gray-500);
+    text-align: right;
+    margin-top: 4px;
+    padding-right: 16px;
+}
+
+.tupay-digit-counter.error {
+    color: var(--error);
+}
+
+.tupay-digit-counter.success {
+    color: var(--success);
+}
+</style>
+
+<script>
+(function() {
+    // ========================================
+    // CONFIGURACIÓN DE TIPOS DE DOCUMENTO
+    // ========================================
+    const DOC_TYPES = {
+        DNI: {
+            label: 'DNI',
+            length: 8,
+            numeric: true,
+            placeholder: 'Ej: 12345678',
+            hint: '8 dígitos'
+        },
+        CE: {
+            label: 'Carnet de Extranjería (CE)',
+            length: 9,
+            numeric: true,
+            placeholder: 'Ej: 123456789',
+            hint: '9 dígitos'
+        },
+        RUC: {
+            label: 'RUC',
+            length: 11,
+            numeric: true,
+            placeholder: 'Ej: 12345678901',
+            hint: '11 dígitos'
+        },
+        PASS: {
+            label: 'Pasaporte (PASS)',
+            length: 12,
+            numeric: false, // alfanumérico
+            placeholder: 'Ej: AB1234567890',
+            hint: '12 caracteres'
+        }
+    };
+
+    // ========================================
+    // ESTADO DE LA APLICACIÓN
+    // ========================================
+    let state = {
+        screen: 'step1', // step1 | step2 | success
+        // Step 1 fields
+        holderName: '',
+        docType: 'DNI',
+        docNumber: '',
+        // Step 2 fields
+        yapePhone: '',
+        bank: '',
+        // Validation state
+        errors: {
+            holderName: '',
+            docNumber: '',
+            yapePhone: '',
+            bank: ''
+        },
+        touched: {
+            holderName: false,
+            docNumber: false,
+            yapePhone: false,
+            bank: false
+        }
+    };
+
+    // ========================================
+    // VALIDACIÓN
+    // ========================================
+    function validateHolderName() {
+        const value = state.holderName.trim();
+        if (!value) {
+            return 'El nombre es requerido';
+        }
+        if (value.length < 3) {
+            return 'Ingresá el nombre completo';
+        }
+        return '';
+    }
+
+    function validateDocNumber() {
+        const config = DOC_TYPES[state.docType];
+        let value = state.docNumber.trim();
+        
+        if (!value) {
+            return 'El número de documento es requerido';
+        }
+
+        // Normalizar: quitar espacios y guiones
+        value = value.replace(/[\s\-]/g, '');
+
+        if (config.numeric) {
+            // Solo números
+            if (!/^\d+$/.test(value)) {
+                return 'Ingresá solo números';
+            }
+        } else {
+            // Alfanumérico (PASS)
+            if (!/^[A-Za-z0-9]+$/.test(value)) {
+                return 'Ingresá solo letras y números';
+            }
+        }
+
+        if (value.length !== config.length) {
+            const unit = config.numeric ? 'dígitos' : 'caracteres';
+            return `Debe tener ${config.length} ${unit}`;
+        }
+
+        return '';
+    }
+
+    function validateYapePhone() {
+        const value = state.yapePhone.trim();
+        if (!value) {
+            return 'El número de celular es requerido';
+        }
+        if (!/^\d{9}$/.test(value)) {
+            return 'Ingresá 9 dígitos';
+        }
+        return '';
+    }
+
+    function validateBank() {
+        if (!state.bank) {
+            return 'Seleccioná un banco';
+        }
+        return '';
+    }
+
+    function isStep1Valid() {
+        return !validateHolderName() && !validateDocNumber();
+    }
+
+    function isStep2Valid() {
+        return !validateYapePhone() && !validateBank();
+    }
+
+    // ========================================
+    // ICONOS SVG
+    // ========================================
+    const ICONS = {
+        back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>`,
+        check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>`
+    };
+
+    // ========================================
+    // RENDERIZADO
+    // ========================================
+    function render() {
+        const app = document.getElementById('tupay-app');
+        let html = '';
+
+        switch (state.screen) {
+            case 'step1':
+                html = renderStep1();
+                break;
+            case 'step2':
+                html = renderStep2();
+                break;
+            case 'success':
+                html = renderSuccess();
+                break;
+        }
+
+        app.innerHTML = html;
+        attachEventListeners();
+    }
+
+    function renderStep1() {
+        const docConfig = DOC_TYPES[state.docType];
+        const holderError = state.touched.holderName ? validateHolderName() : '';
+        const docError = state.touched.docNumber ? validateDocNumber() : '';
+        const isValid = isStep1Valid();
+
+        // Contador de dígitos/caracteres
+        const currentLength = state.docNumber.replace(/[\s\-]/g, '').length;
+        const targetLength = docConfig.length;
+        let counterClass = '';
+        if (state.touched.docNumber && currentLength > 0) {
+            if (currentLength === targetLength) {
+                counterClass = 'success';
+            } else if (currentLength > targetLength) {
+                counterClass = 'error';
+            }
+        }
+
+        // Select options
+        const docTypeOptions = Object.entries(DOC_TYPES).map(([key, cfg]) => 
+            `<option value="${key}" ${state.docType === key ? 'selected' : ''}>${cfg.label}</option>`
+        ).join('');
+
+        return `
+            <div class="tupay-header">
+                <h1 class="tupay-header-title">Agregar una cuenta</h1>
+            </div>
+            <div class="tupay-content">
+                <div class="tupay-info-box">
+                    <div class="tupay-info-box-icon">💡</div>
+                    <div class="tupay-info-box-text">
+                        Elegí el tipo de documento del titular de la cuenta. Debe coincidir con el documento registrado en el banco.
+                    </div>
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Nombre y apellido del titular de la cuenta</label>
+                    <input 
+                        type="text" 
+                        class="tupay-input ${holderError ? 'error' : (state.touched.holderName && state.holderName.trim() ? 'success' : '')}"
+                        placeholder="Ej: Juan Pérez"
+                        value="${state.holderName}"
+                        data-field="holderName"
+                    >
+                    <div class="tupay-error-msg ${holderError ? 'visible' : ''}">${holderError}</div>
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Tipo de documento</label>
+                    <select class="tupay-select" data-field="docType">
+                        ${docTypeOptions}
+                    </select>
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Número de documento</label>
+                    <input 
+                        type="${docConfig.numeric ? 'tel' : 'text'}" 
+                        class="tupay-input ${docError ? 'error' : (state.touched.docNumber && !validateDocNumber() ? 'success' : '')}"
+                        placeholder="${docConfig.placeholder}"
+                        value="${state.docNumber}"
+                        data-field="docNumber"
+                        maxlength="${docConfig.length + 2}"
+                        inputmode="${docConfig.numeric ? 'numeric' : 'text'}"
+                    >
+                    <div class="tupay-digit-counter ${counterClass}">${currentLength}/${targetLength} ${docConfig.numeric ? 'dígitos' : 'caracteres'}</div>
+                    <div class="tupay-error-msg ${docError ? 'visible' : ''}">${docError}</div>
+                </div>
+            </div>
+            <div class="tupay-footer">
+                <button class="tupay-btn tupay-btn-primary ${isValid ? 'enabled' : ''}" data-action="go-step2">
+                    Siguiente
+                </button>
+                <button class="tupay-btn tupay-btn-link" data-action="go-back-home">
+                    Volver a mis cuentas
+                </button>
+            </div>
+        `;
+    }
+
+    function renderStep2() {
+        const phoneError = state.touched.yapePhone ? validateYapePhone() : '';
+        const bankError = state.touched.bank ? validateBank() : '';
+        const isValid = isStep2Valid();
+
+        return `
+            <div class="tupay-header">
+                <h1 class="tupay-header-title">Agregar una cuenta</h1>
+            </div>
+            <div class="tupay-content">
+                <button class="tupay-back-btn" data-action="go-step1">
+                    ${ICONS.back} 
+                </button>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Ingresa tu número de celular vinculado a Yape</label>
+                    <input 
+                        type="tel" 
+                        class="tupay-input ${phoneError ? 'error' : (state.touched.yapePhone && !validateYapePhone() ? 'success' : '')}"
+                        placeholder="Ej: 123456789"
+                        value="${state.yapePhone}"
+                        data-field="yapePhone"
+                        maxlength="9"
+                        inputmode="numeric"
+                    >
+                    <div class="tupay-error-msg ${phoneError ? 'visible' : ''}">${phoneError}</div>
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Selecciona tu banco</label>
+                    <select class="tupay-select ${bankError ? 'error' : ''}" data-field="bank">
+                        <option value="">Banco</option>
+                        <option value="bcp" ${state.bank === 'bcp' ? 'selected' : ''}>BCP</option>
+                        <option value="interbank" ${state.bank === 'interbank' ? 'selected' : ''}>Interbank</option>
+                        <option value="bbva" ${state.bank === 'bbva' ? 'selected' : ''}>BBVA</option>
+                        <option value="scotiabank" ${state.bank === 'scotiabank' ? 'selected' : ''}>Scotiabank</option>
+                        <option value="banbif" ${state.bank === 'banbif' ? 'selected' : ''}>BanBif</option>
+                        <option value="pichincha" ${state.bank === 'pichincha' ? 'selected' : ''}>Banco Pichincha</option>
+                    </select>
+                    <div class="tupay-hint">
+                        ¿No sabés con qué banco está vinculada tu cuenta? <a class="tupay-hint-link">Revisalo en la app de Yape &gt; Perfil.</a>
+                    </div>
+                    <div class="tupay-error-msg ${bankError ? 'visible' : ''}">${bankError}</div>
+                </div>
+            </div>
+            <div class="tupay-footer">
+                <button class="tupay-btn tupay-btn-primary ${isValid ? 'enabled' : ''}" data-action="submit">
+                    Siguiente
+                </button>
+                <button class="tupay-btn tupay-btn-link" data-action="go-back-home">
+                    Volver a mis cuentas
+                </button>
+            </div>
+        `;
+    }
+
+    function renderSuccess() {
+        const docConfig = DOC_TYPES[state.docType];
+        // Enmascarar documento (mostrar solo últimos 4)
+        const maskedDoc = state.docNumber.slice(-4).padStart(state.docNumber.length, '*');
+
+        return `
+            <div class="tupay-header">
+                <h1 class="tupay-header-title">Agregar una cuenta</h1>
+            </div>
+            <div class="tupay-content" style="justify-content: center; text-align: center;">
+                <div class="tupay-success-icon">
+                    ${ICONS.check}
+                </div>
+                <h2 class="tupay-success-title">¡Cuenta agregada!</h2>
+                <p class="tupay-success-subtitle">
+                    La cuenta a nombre de <strong>${state.holderName}</strong> con ${docConfig.label} <strong>${maskedDoc}</strong> fue registrada correctamente.
+                </p>
+            </div>
+            <div class="tupay-footer">
+                <button class="tupay-btn tupay-btn-primary enabled" data-action="go-back-home">
+                    Volver a mis cuentas
+                </button>
+            </div>
+        `;
+    }
+
+    // ========================================
+    // EVENT LISTENERS
+    // ========================================
+    function attachEventListeners() {
+        const app = document.getElementById('tupay-app');
+
+        // Click events
+        app.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+
+            const action = target.dataset.action;
+
+            switch (action) {
+                case 'go-step2':
+                    if (isStep1Valid()) {
+                        state.screen = 'step2';
+                        state.touched.yapePhone = false;
+                        state.touched.bank = false;
+                        render();
+                    }
+                    break;
+                case 'go-step1':
+                    state.screen = 'step1';
+                    render();
+                    break;
+                case 'submit':
+                    // Marcar todos como touched para mostrar errores
+                    state.touched.yapePhone = true;
+                    state.touched.bank = true;
+                    if (isStep2Valid()) {
+                        state.screen = 'success';
+                        render();
+                    } else {
+                        render();
+                    }
+                    break;
+                case 'go-back-home':
+                    // Reset y volver al inicio
+                    state = {
+                        screen: 'step1',
+                        holderName: '',
+                        docType: 'DNI',
+                        docNumber: '',
+                        yapePhone: '',
+                        bank: '',
+                        errors: { holderName: '', docNumber: '', yapePhone: '', bank: '' },
+                        touched: { holderName: false, docNumber: false, yapePhone: false, bank: false }
+                    };
+                    render();
+                    break;
+            }
+        });
+
+        // Input events
+        app.querySelectorAll('input[data-field], select[data-field]').forEach(el => {
+            const field = el.dataset.field;
+
+            el.addEventListener('input', (e) => {
+                let value = e.target.value;
+
+                // Normalización específica
+                if (field === 'docNumber') {
+                    const config = DOC_TYPES[state.docType];
+                    if (config.numeric) {
+                        // Solo permitir números
+                        value = value.replace(/\D/g, '');
+                    } else {
+                        // PASS: alfanumérico, normalizar a mayúsculas, quitar espacios/guiones
+                        value = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    }
+                    e.target.value = value;
+                }
+
+                if (field === 'yapePhone') {
+                    value = value.replace(/\D/g, '');
+                    e.target.value = value;
+                }
+
+                state[field] = value;
+                state.touched[field] = true;
+                render();
+            });
+
+            el.addEventListener('blur', () => {
+                state.touched[field] = true;
+                render();
+            });
+
+            el.addEventListener('change', (e) => {
+                state[field] = e.target.value;
+                state.touched[field] = true;
+
+                // Si cambia el tipo de documento, limpiar el número
+                if (field === 'docType') {
+                    state.docNumber = '';
+                    state.touched.docNumber = false;
+                }
+
+                render();
+            });
+        });
+    }
+
+    // ========================================
+    // INICIALIZAR
+    // ========================================
+    render();
+})();
+</script>
