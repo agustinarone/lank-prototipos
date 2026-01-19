@@ -780,26 +780,37 @@
 .agi-demo-toggle {
     position: fixed;
     bottom: 100px;
-    right: 10px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--primary);
+    right: 20px;
+    min-width: 180px;
+    height: 48px;
+    padding: 0 20px;
+    border-radius: 24px;
+    background-color: var(--orange-dark);
     color: white;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(66, 66, 178, 0.4);
+    box-shadow: 0 6px 20px rgba(66, 66, 178, 0.5);
     z-index: 100;
-    font-size: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.agi-demo-toggle:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 8px 24px rgba(66, 66, 178, 0.6);
+    transform: translateY(-2px);
 }
 
 .agi-demo-panel {
     position: fixed;
-    bottom: 150px;
-    right: 10px;
+    bottom: 160px;
+    right: 20px;
     width: 280px;
     background: white;
     border-radius: 12px;
@@ -2262,7 +2273,7 @@
         `).join('');
 
         return `
-            <button class="agi-demo-toggle" data-action="toggle-demo">⚙</button>
+            <button class="agi-demo-toggle" data-action="toggle-demo">Controlador de flujo</button>
             <div class="agi-demo-panel ${state.demoPanelOpen ? 'open' : ''}">
                 <div class="agi-demo-header">
                     Demo Controls
