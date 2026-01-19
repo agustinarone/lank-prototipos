@@ -242,8 +242,8 @@
    FOOTER
 ======================================== */
 .tupay-footer {
-    padding: 16px 20px 24px;
-    background: var(--gray-50);
+    padding: 24px 0 8px;
+    margin-top: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -293,23 +293,60 @@
     background: #FFF7ED;
     border: 1px solid #FED7AA;
     border-radius: 12px;
-    padding: 12px 14px;
     margin-bottom: 20px;
     display: flex;
+    flex-direction: column;
+}
+
+.tupay-info-box-header {
+    padding: 12px 14px;
+    display: flex;
     gap: 10px;
-    align-items: flex-start;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    min-height: 44px;
+}
+
+.tupay-info-box-header:hover {
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .tupay-info-box-icon {
     font-size: 16px;
     flex-shrink: 0;
-    margin-top: 2px;
+    line-height: 1.2;
 }
 
-.tupay-info-box-text {
+.tupay-info-box-title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    line-height: 1.5;
+}
+
+.tupay-info-box-toggle {
+    font-size: 12px;
+    color: var(--gray-500);
+    transition: transform 0.2s;
+}
+
+.tupay-info-box.collapsed .tupay-info-box-toggle {
+    transform: rotate(-90deg);
+}
+
+.tupay-info-box-content {
+    padding: 0 14px 12px 14px;
     font-size: 13px;
     color: var(--gray-700);
     line-height: 1.5;
+    display: block;
+}
+
+.tupay-info-box.collapsed .tupay-info-box-content {
+    display: none;
 }
 
 /* ========================================
@@ -378,19 +415,27 @@
         docType: 'DNI',
         docNumber: '',
         // Step 2 fields
-        yapePhone: '',
+        paymentMethod: '', // 'yape' | 'plin'
+        phone: '',
         bank: '',
+        // UI state
+        infoBoxCollapsed: {
+            step1: false, // Por defecto abierto
+            'step2-warning': false  // Por defecto abierto
+        },
         // Validation state
         errors: {
             holderName: '',
             docNumber: '',
-            yapePhone: '',
+            paymentMethod: '',
+            phone: '',
             bank: ''
         },
         touched: {
             holderName: false,
             docNumber: false,
-            yapePhone: false,
+            paymentMethod: false,
+            phone: false,
             bank: false
         }
     };
@@ -440,8 +485,15 @@
         return '';
     }
 
-    function validateYapePhone() {
-        const value = state.yapePhone.trim();
+    function validatePaymentMethod() {
+        if (!state.paymentMethod) {
+            return 'Seleccioná un método de pago';
+        }
+        return '';
+    }
+
+    function validatePhone() {
+        const value = state.phone.trim();
         if (!value) {
             return 'El número de celular es requerido';
         }
@@ -463,7 +515,7 @@
     }
 
     function isStep2Valid() {
-        return !validateYapePhone() && !validateBank();
+        return !validatePaymentMethod() && !validatePhone() && !validateBank();
     }
 
     // ========================================
@@ -479,6 +531,25 @@
     // ========================================
     function render() {
         const app = document.getElementById('tupay-app');
+        const contentContainer = app.querySelector('.tupay-content');
+        
+        // Guardar el elemento activo y su posición de cursor antes de renderizar
+        const activeElement = document.activeElement;
+        let savedFocus = null;
+        if (activeElement && activeElement.tagName === 'INPUT' && activeElement.dataset.field) {
+            savedFocus = {
+                field: activeElement.dataset.field,
+                selectionStart: activeElement.selectionStart,
+                selectionEnd: activeElement.selectionEnd
+            };
+        }
+        
+        // Guardar la posición del scroll antes de renderizar
+        let savedScrollTop = 0;
+        if (contentContainer) {
+            savedScrollTop = contentContainer.scrollTop;
+        }
+        
         let html = '';
 
         switch (state.screen) {
@@ -495,6 +566,23 @@
 
         app.innerHTML = html;
         attachEventListeners();
+        
+        // Restaurar la posición del scroll
+        const newContentContainer = app.querySelector('.tupay-content');
+        if (newContentContainer && savedScrollTop > 0) {
+            newContentContainer.scrollTop = savedScrollTop;
+        }
+        
+        // Restaurar el foco y la posición del cursor
+        if (savedFocus) {
+            const input = app.querySelector(`input[data-field="${savedFocus.field}"]`);
+            if (input) {
+                input.focus();
+                if (input.setSelectionRange) {
+                    input.setSelectionRange(savedFocus.selectionStart, savedFocus.selectionEnd);
+                }
+            }
+        }
     }
 
     function renderStep1() {
@@ -525,10 +613,14 @@
                 <h1 class="tupay-header-title">Agregar una cuenta</h1>
             </div>
             <div class="tupay-content">
-                <div class="tupay-info-box">
-                    <div class="tupay-info-box-icon">💡</div>
-                    <div class="tupay-info-box-text">
-                        Elegí el tipo de documento del titular de la cuenta. Debe coincidir con el documento registrado en el banco.
+                <div class="tupay-info-box ${state.infoBoxCollapsed.step1 ? 'collapsed' : ''}" data-info-box="step1">
+                    <div class="tupay-info-box-header">
+                        <div class="tupay-info-box-icon">💡</div>
+                        <div class="tupay-info-box-title">Importante</div>
+                        <div class="tupay-info-box-toggle">▼</div>
+                    </div>
+                    <div class="tupay-info-box-content">
+                        Los datos que ingreses deben ser del titular de la cuenta bancaria que vas a vincular. Estos datos deben coincidir exactamente con los registrados en tu banco.
                     </div>
                 </div>
 
@@ -565,22 +657,27 @@
                     <div class="tupay-digit-counter ${counterClass}">${currentLength}/${targetLength} ${docConfig.numeric ? 'dígitos' : 'caracteres'}</div>
                     <div class="tupay-error-msg ${docError ? 'visible' : ''}">${docError}</div>
                 </div>
-            </div>
-            <div class="tupay-footer">
-                <button class="tupay-btn tupay-btn-primary ${isValid ? 'enabled' : ''}" data-action="go-step2">
-                    Siguiente
-                </button>
-                <button class="tupay-btn tupay-btn-link" data-action="go-back-home">
-                    Volver a mis cuentas
-                </button>
+                
+                <div class="tupay-footer">
+                    <button class="tupay-btn tupay-btn-primary ${isValid ? 'enabled' : ''}" data-action="go-step2">
+                        Siguiente
+                    </button>
+                    <button class="tupay-btn tupay-btn-link" data-action="go-back-home">
+                        Volver a mis cuentas
+                    </button>
+                </div>
             </div>
         `;
     }
 
     function renderStep2() {
-        const phoneError = state.touched.yapePhone ? validateYapePhone() : '';
+        const paymentMethodError = state.touched.paymentMethod ? validatePaymentMethod() : '';
+        const phoneError = state.touched.phone ? validatePhone() : '';
         const bankError = state.touched.bank ? validateBank() : '';
         const isValid = isStep2Valid();
+        
+        const docConfig = DOC_TYPES[state.docType];
+        const paymentMethodName = state.paymentMethod === 'yape' ? 'Yape' : state.paymentMethod === 'plin' ? 'Plin' : '';
 
         return `
             <div class="tupay-header">
@@ -591,14 +688,59 @@
                     ${ICONS.back} 
                 </button>
 
+                <!-- Advertencia -->
+                <div class="tupay-info-box ${state.infoBoxCollapsed['step2-warning'] ? 'collapsed' : ''}" data-info-box="step2-warning" style="background: #FFF7ED; border-color: #FED7AA;">
+                    <div class="tupay-info-box-header">
+                        <div class="tupay-info-box-icon">⚠️</div>
+                        <div class="tupay-info-box-title">Confirma que estos datos coinciden</div>
+                        <div class="tupay-info-box-toggle">▼</div>
+                    </div>
+                    <div class="tupay-info-box-content">
+                        Estos datos deben coincidir con el titular de la cuenta ${paymentMethodName ? paymentMethodName + ' ' : ''}que vas a vincular. Si no coinciden, la transacción fallará.
+                    </div>
+                </div>
+
+                <!-- Datos del titular (Solo lectura) -->
                 <div class="tupay-form-group">
-                    <label class="tupay-label">Ingresa tu número de celular vinculado a Yape</label>
+                    <label class="tupay-label">Titular de la cuenta</label>
+                    <input 
+                        type="text" 
+                        class="tupay-input" 
+                        value="${state.holderName}" 
+                        disabled
+                        style="background: #f9fafb; color: #4b5563; border-color: #e5e7eb;"
+                    >
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">${docConfig.label}</label>
+                    <input 
+                        type="text" 
+                        class="tupay-input" 
+                        value="${state.docNumber}" 
+                        disabled
+                        style="background: #f9fafb; color: #4b5563; border-color: #e5e7eb;"
+                    >
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Método de pago</label>
+                    <select class="tupay-select ${paymentMethodError ? 'error' : ''}" data-field="paymentMethod">
+                        <option value="">Selecciona un método</option>
+                        <option value="yape" ${state.paymentMethod === 'yape' ? 'selected' : ''}>Yape</option>
+                        <option value="plin" ${state.paymentMethod === 'plin' ? 'selected' : ''}>Plin</option>
+                    </select>
+                    <div class="tupay-error-msg ${paymentMethodError ? 'visible' : ''}">${paymentMethodError}</div>
+                </div>
+
+                <div class="tupay-form-group">
+                    <label class="tupay-label">Número de celular vinculado ${paymentMethodName ? 'a ' + paymentMethodName : ''}</label>
                     <input 
                         type="tel" 
-                        class="tupay-input ${phoneError ? 'error' : (state.touched.yapePhone && !validateYapePhone() ? 'success' : '')}"
+                        class="tupay-input ${phoneError ? 'error' : (state.touched.phone && !validatePhone() ? 'success' : '')}"
                         placeholder="Ej: 123456789"
-                        value="${state.yapePhone}"
-                        data-field="yapePhone"
+                        value="${state.phone}"
+                        data-field="phone"
                         maxlength="9"
                         inputmode="numeric"
                     >
@@ -606,7 +748,7 @@
                 </div>
 
                 <div class="tupay-form-group">
-                    <label class="tupay-label">Selecciona tu banco</label>
+                    <label class="tupay-label">Selecciona el banco</label>
                     <select class="tupay-select ${bankError ? 'error' : ''}" data-field="bank">
                         <option value="">Banco</option>
                         <option value="bcp" ${state.bank === 'bcp' ? 'selected' : ''}>BCP</option>
@@ -617,18 +759,19 @@
                         <option value="pichincha" ${state.bank === 'pichincha' ? 'selected' : ''}>Banco Pichincha</option>
                     </select>
                     <div class="tupay-hint">
-                        ¿No sabés con qué banco está vinculada tu cuenta? <a class="tupay-hint-link">Revisalo en la app de Yape &gt; Perfil.</a>
+                        ¿No sabés con qué banco está vinculada tu cuenta? <a class="tupay-hint-link">Revisalo en la app de ${paymentMethodName || 'Yape/Plin'} &gt; Perfil.</a>
                     </div>
                     <div class="tupay-error-msg ${bankError ? 'visible' : ''}">${bankError}</div>
                 </div>
-            </div>
-            <div class="tupay-footer">
-                <button class="tupay-btn tupay-btn-primary ${isValid ? 'enabled' : ''}" data-action="submit">
-                    Siguiente
-                </button>
-                <button class="tupay-btn tupay-btn-link" data-action="go-back-home">
-                    Volver a mis cuentas
-                </button>
+                
+                <div class="tupay-footer">
+                    <button class="tupay-btn tupay-btn-primary ${isValid ? 'enabled' : ''}" data-action="submit">
+                        Siguiente
+                    </button>
+                    <button class="tupay-btn tupay-btn-link" data-action="go-back-home">
+                        Volver a mis cuentas
+                    </button>
+                </div>
             </div>
         `;
     }
@@ -637,6 +780,7 @@
         const docConfig = DOC_TYPES[state.docType];
         // Enmascarar documento (mostrar solo últimos 4)
         const maskedDoc = state.docNumber.slice(-4).padStart(state.docNumber.length, '*');
+        const paymentMethodName = state.paymentMethod === 'yape' ? 'Yape' : state.paymentMethod === 'plin' ? 'Plin' : '';
 
         return `
             <div class="tupay-header">
@@ -648,13 +792,14 @@
                 </div>
                 <h2 class="tupay-success-title">¡Cuenta agregada!</h2>
                 <p class="tupay-success-subtitle">
-                    La cuenta a nombre de <strong>${state.holderName}</strong> con ${docConfig.label} <strong>${maskedDoc}</strong> fue registrada correctamente.
+                    La cuenta ${paymentMethodName ? paymentMethodName + ' ' : ''}a nombre de <strong>${state.holderName}</strong> con ${docConfig.label} <strong>${maskedDoc}</strong> fue registrada correctamente.
                 </p>
-            </div>
-            <div class="tupay-footer">
-                <button class="tupay-btn tupay-btn-primary enabled" data-action="go-back-home">
-                    Volver a mis cuentas
-                </button>
+                
+                <div class="tupay-footer">
+                    <button class="tupay-btn tupay-btn-primary enabled" data-action="go-back-home">
+                        Volver a mis cuentas
+                    </button>
+                </div>
             </div>
         `;
     }
@@ -664,6 +809,26 @@
     // ========================================
     function attachEventListeners() {
         const app = document.getElementById('tupay-app');
+
+        // Info box toggle events
+        app.querySelectorAll('.tupay-info-box-header').forEach(header => {
+            header.addEventListener('click', (e) => {
+                const infoBox = header.closest('.tupay-info-box');
+                if (!infoBox) return;
+                
+                const infoBoxId = infoBox.dataset.infoBox;
+                if (infoBoxId) {
+                    // Toggle el estado
+                    state.infoBoxCollapsed[infoBoxId] = !state.infoBoxCollapsed[infoBoxId];
+                    // Aplicar/remover la clase collapsed
+                    if (state.infoBoxCollapsed[infoBoxId]) {
+                        infoBox.classList.add('collapsed');
+                    } else {
+                        infoBox.classList.remove('collapsed');
+                    }
+                }
+            });
+        });
 
         // Click events
         app.addEventListener('click', (e) => {
@@ -676,7 +841,8 @@
                 case 'go-step2':
                     if (isStep1Valid()) {
                         state.screen = 'step2';
-                        state.touched.yapePhone = false;
+                        state.touched.paymentMethod = false;
+                        state.touched.phone = false;
                         state.touched.bank = false;
                         render();
                     }
@@ -687,7 +853,8 @@
                     break;
                 case 'submit':
                     // Marcar todos como touched para mostrar errores
-                    state.touched.yapePhone = true;
+                    state.touched.paymentMethod = true;
+                    state.touched.phone = true;
                     state.touched.bank = true;
                     if (isStep2Valid()) {
                         state.screen = 'success';
@@ -703,10 +870,15 @@
                         holderName: '',
                         docType: 'DNI',
                         docNumber: '',
-                        yapePhone: '',
+                        paymentMethod: '',
+                        phone: '',
                         bank: '',
-                        errors: { holderName: '', docNumber: '', yapePhone: '', bank: '' },
-                        touched: { holderName: false, docNumber: false, yapePhone: false, bank: false }
+                        infoBoxCollapsed: {
+                            step1: false,
+                            'step2-warning': false
+                        },
+                        errors: { holderName: '', docNumber: '', paymentMethod: '', phone: '', bank: '' },
+                        touched: { holderName: false, docNumber: false, paymentMethod: false, phone: false, bank: false }
                     };
                     render();
                     break;
@@ -733,9 +905,15 @@
                     e.target.value = value;
                 }
 
-                if (field === 'yapePhone') {
+                if (field === 'phone') {
                     value = value.replace(/\D/g, '');
                     e.target.value = value;
+                }
+                
+                // Si cambia el método de pago, limpiar el teléfono
+                if (field === 'paymentMethod') {
+                    state.phone = '';
+                    state.touched.phone = false;
                 }
 
                 state[field] = value;
@@ -743,9 +921,13 @@
                 render();
             });
 
-            el.addEventListener('blur', () => {
-                state.touched[field] = true;
-                render();
+            el.addEventListener('blur', (e) => {
+                // Solo actualizar si realmente se perdió el foco (no por un click en otro elemento interactivo)
+                const relatedTarget = e.relatedTarget;
+                if (!relatedTarget || !relatedTarget.closest('[data-action]')) {
+                    state.touched[field] = true;
+                    render();
+                }
             });
 
             el.addEventListener('change', (e) => {
