@@ -1,0 +1,241 @@
+# Aprobación de Grupos con IA  
+## Documento de iteración de diseño (para prototipo)
+
+---
+
+## 1. Propósito del documento
+
+Este documento sirve como guía operativa para iterar el diseño actual del flujo de **Aprobación de Grupos con IA**.
+
+Está pensado para:
+- Trabajar directamente sobre el prototipo (Cursor / Figma).
+- Ajustar pantallas, flujos y mensajes.
+- Alinear diseño con el comportamiento real de la IA y las decisiones de producto.
+
+No es un PRD ni una spec técnica.
+
+---
+
+## 2. Contexto resumido
+
+- El flujo de aprobación con IA es **nuevo**.
+- La IA analiza **exclusivamente las capturas**.
+- No se validan credenciales (usuario / contraseña).
+- El objetivo es **reducir fricción**, acelerar publicación y permitir correcciones claras.
+
+---
+
+## 3. Principios de diseño (obligatorios)
+
+1. **Nunca mostrar “rechazado” como estado final**
+   - El grupo:
+     - Se aprueba automáticamente, o
+     - Permite corrección, o
+     - Pasa a revisión manual.
+   - “Rechazado” genera churn y confusión.
+
+2. **No exponer la IA explícitamente**
+   - Evitar términos como “IA”, “modelo”, “automático”.
+   - Usar lenguaje neutral: “revisamos”, “verificamos”.
+
+3. **Mensajes accionables**
+   - Evitar textos genéricos.
+   - Cada error debe indicar qué está mal y qué hacer.
+
+4. **Corrección en una sola iteración**
+   - Si hay múltiples errores, mostrarlos todos juntos.
+   - Excepción: error crítico de imagen inválida.
+
+5. **No afirmar lo que no sabemos**
+   - No decir “credenciales correctas”.
+   - Solo mostrar validaciones reales (capturas).
+
+---
+
+## 4. Flujo general
+Crear grupo
+↓
+Pantalla: “Estamos revisando tu grupo”
+↓
+Resultado:
+	•	Aprobado automáticamente
+	•	Corrección requerida
+	•	Revisión manual
+
+---
+
+## 5. Pantalla: “Estamos revisando tu grupo”
+
+### Objetivo
+Mostrar estado intermedio mientras se procesa la validación.
+
+### Comportamiento
+- Loader visible (~10 segundos).
+- Navegación bloqueada.
+- Espera respuesta del backend.
+
+### Copy sugerido
+**Título**
+> Estamos revisando tu grupo
+
+**Texto**
+> Esto puede tardar unos segundos mientras verificamos la información.
+
+### Edge case
+Si no hay respuesta (timeout / error técnico):
+- Mostrar mensaje de error genérico.
+- Enviar grupo automáticamente a revisión manual.
+
+---
+
+## 6. Pantalla: Grupo aprobado automáticamente
+
+### Objetivo
+Confirmar aprobación y guiar al siguiente paso.
+
+### Copy base
+**Título**
+> ¡Tu grupo fue aprobado!
+
+**Texto**
+> Ya está publicado y otros Lankers pueden unirse.
+
+### Elementos informativos (condicionales)
+- ¿Cuándo recibís tu pago?
+- Cargar cuenta bancaria (solo si no existe)
+
+### CTA
+**Primario**
+> Ver grupo
+
+---
+
+## 7. Pantalla clave: Corrección requerida
+
+### Concepto
+No es un rechazo.
+Es una devolución accionable para corregir información.
+
+---
+
+### 7.1 Estructura recomendada
+
+1. Mensaje principal
+2. Lista de problemas detectados
+3. Qué puede hacer el usuario
+4. CTA principal
+
+---
+
+### 7.2 Tipos de errores
+
+#### Error crítico (bloqueante)
+- Imagen no corresponde a la plataforma.
+- No se puede extraer información.
+
+**Mensaje**
+> No pudimos identificar la información necesaria en las capturas.
+
+**Acción**
+- Re-subir capturas.
+- No mostrar otros errores.
+
+---
+
+#### Errores funcionales (pueden combinarse)
+
+Ejemplos:
+- No hay cupos disponibles.
+- Dirección no coincide con la captura (Spotify).
+- País no coincide.
+- Plan incorrecto.
+
+**Mensaje ejemplo**
+> Detectamos estos problemas en tu grupo:
+- No hay cupos disponibles para compartir.
+- La dirección no coincide con la que figura en la cuenta.
+
+---
+
+### 7.3 Comportamiento visual
+
+- Mostrar únicamente lo incorrecto.
+- Capturas correctas:
+  - Solo lectura.
+- Capturas incorrectas:
+  - Editables.
+- No usar ticks verdes de “todo OK”.
+
+---
+
+### 7.4 CTAs
+
+**Botón principal (full width)**
+> Revisar capturas
+
+**Secundario (si aplica)**
+- Borrar grupo (solo si aún no pasó a revisión manual)
+
+---
+
+## 8. Límite de intentos
+
+### Regla
+- Máximo 3 intentos automáticos.
+- Al superar el límite:
+  - El grupo pasa a revisión manual.
+  - No se permite seguir corrigiendo automáticamente.
+
+### Pantalla sugerida
+
+**Título**
+> Vamos a revisar tu grupo manualmente
+
+**Texto**
+> No pudimos validarlo automáticamente.  
+> Nuestro equipo lo revisará y te avisaremos.
+
+Sin CTA de edición.
+
+---
+
+## 9. Estados internos (no visibles para el usuario)
+
+Sugeridos para implementación:
+
+- `approved_by_ai` (boolean)
+- `ai_attempts` (number)
+
+Uso:
+- Filtrado interno por CS.
+- Control de reintentos.
+
+---
+
+## 10. Decisiones cerradas
+
+- No se validan credenciales.
+- No se muestran “credenciales correctas”.
+- No existe rechazo final visible.
+- Se prioriza velocidad y retry.
+- Revisión manual como fallback.
+
+---
+
+## 11. Fuera de alcance (esta iteración)
+
+- Métricas post-aprobación.
+- Panel de Customer Support.
+- Comunicación externa.
+- Antifraude avanzado.
+
+---
+
+## 12. Objetivo del prototipo
+
+Validar:
+- Claridad del flujo.
+- Comprensión de errores.
+- Capacidad de corrección sin frustración.
+
+Antes de implementar en Bubble.

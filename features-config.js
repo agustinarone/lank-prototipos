@@ -7,12 +7,11 @@ const FEATURES = {
         path: 'features/welcome/index.html',
         description: 'Pantalla de bienvenida inicial'
     },
-    // Agrega más features aquí:
-    // 'feature-a': {
-    //     name: 'Feature A',
-    //     path: 'features/feature-a/index.html',
-    //     description: 'Descripción de Feature A'
-    // },
+    'aprobracion-grupos-ia': {
+        name: 'Aprobación de Grupos',
+        path: 'features/aprobracion-grupos-ia/index.html',
+        description: 'Flujo completo de creación y aprobación de grupos con validación automática'
+    },
 };
 
 // Feature por defecto

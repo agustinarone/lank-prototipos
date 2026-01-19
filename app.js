@@ -60,6 +60,20 @@ class FeatureRouter {
                 this.container.appendChild(tempDiv.firstChild);
             }
             
+            // Ejecutar los scripts de la feature
+            const scripts = this.container.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                // Copiar atributos
+                Array.from(oldScript.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                // Copiar contenido
+                newScript.textContent = oldScript.textContent;
+                // Reemplazar el script viejo con el nuevo para que se ejecute
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+            
             // Actualizar URL sin recargar
             window.history.replaceState(null, '', `#${featureKey}`);
             

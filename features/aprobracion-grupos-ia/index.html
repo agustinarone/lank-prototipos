@@ -1,0 +1,2569 @@
+<!-- Prototipo: Aprobación de Grupos con IA -->
+<div class="agi-feature" id="agi-app">
+    <!-- Pantallas se renderizan dinámicamente aquí -->
+</div>
+
+<style>
+/* ========================================
+   VARIABLES Y RESET
+======================================== */
+.agi-feature {
+    --primary: #4242B2;
+    --primary-dark: #3535a0;
+    --orange: #F5A623;
+    --orange-dark: #e09520;
+    --success: #22C55E;
+    --error: #EF4444;
+    --warning: #F59E0B;
+    --gray-50: #FAFAFA;
+    --gray-100: #F5F5F5;
+    --gray-200: #E5E5E5;
+    --gray-300: #D4D4D4;
+    --gray-400: #A3A3A3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --gray-900: #171717;
+    
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.agi-feature * {
+    box-sizing: border-box;
+}
+
+/* ========================================
+   HEADER DE NAVEGACIÓN
+======================================== */
+.agi-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.agi-header-back {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+    margin-right: 12px;
+}
+
+.agi-header-back:hover {
+    background: var(--gray-100);
+}
+
+.agi-header-back svg {
+    width: 20px;
+    height: 20px;
+    color: var(--gray-700);
+}
+
+.agi-header-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gray-900);
+    flex: 1;
+    text-align: center;
+    margin-right: 44px;
+}
+
+.agi-header-help {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.agi-header-help:hover {
+    background: var(--gray-100);
+}
+
+/* ========================================
+   CONTENIDO SCROLLEABLE
+======================================== */
+.agi-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.agi-content.centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* ========================================
+   PANTALLA: SELECCIÓN DE PLATAFORMA
+======================================== */
+.agi-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.agi-platform-card {
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.agi-platform-card:hover {
+    border-color: var(--primary);
+    background: var(--gray-50);
+}
+
+.agi-platform-card:active {
+    transform: scale(0.98);
+}
+
+.agi-platform-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.agi-platform-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-700);
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Colores de logos por plataforma */
+.agi-platform-logo.netflix { background: #E50914; }
+.agi-platform-logo.spotify { background: #1DB954; }
+.agi-platform-logo.disney { background: #113CCF; }
+.agi-platform-logo.hbo { background: #5822B4; }
+.agi-platform-logo.youtube { background: #FF0000; }
+.agi-platform-logo.prime { background: #00A8E1; }
+.agi-platform-logo.paramount { background: #0064FF; }
+.agi-platform-logo.f1 { background: #E10600; }
+.agi-platform-logo.chatgpt { background: #10A37F; }
+.agi-platform-logo.crunchyroll { background: #F47521; }
+.agi-platform-logo.tidal { background: #000000; }
+
+/* ========================================
+   PANTALLA: FORMULARIO
+======================================== */
+.agi-platform-info {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.agi-platform-info-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+}
+
+.agi-platform-info-details {
+    flex: 1;
+}
+
+.agi-platform-info-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.agi-platform-info-slots {
+    font-size: 13px;
+    color: var(--gray-500);
+}
+
+.agi-platform-info-price {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.agi-platform-info-price span {
+    color: var(--orange);
+}
+
+/* Campos del formulario */
+.agi-form-section {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.agi-form-field {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.agi-form-field:last-child {
+    border-bottom: none;
+}
+
+.agi-form-field.has-error {
+    background: #FEF2F2;
+}
+
+.agi-form-field.readonly {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.agi-field-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    flex-shrink: 0;
+}
+
+.agi-field-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.agi-field-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.agi-field-input {
+    width: 100%;
+    border: none;
+    font-size: 14px;
+    color: var(--gray-700);
+    background: transparent;
+    outline: none;
+}
+
+.agi-field-input::placeholder {
+    color: var(--gray-400);
+}
+
+.agi-field-input:disabled {
+    color: var(--gray-500);
+}
+
+.agi-field-status {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.agi-field-status.error {
+    color: var(--error);
+}
+
+.agi-field-status.success {
+    color: var(--success);
+}
+
+/* Campo de captura */
+.agi-capture-field {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.agi-capture-field:last-child {
+    border-bottom: none;
+}
+
+.agi-capture-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.agi-capture-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+}
+
+.agi-capture-name {
+    flex: 1;
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+.agi-capture-link {
+    font-size: 12px;
+    color: var(--primary);
+    cursor: pointer;
+    margin-top: 6px;
+    margin-left: 40px;
+}
+
+/* Selector de cupos */
+.agi-slots-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.agi-slots-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-300);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--gray-600);
+    transition: all 0.2s;
+}
+
+.agi-slots-btn:hover {
+    background: var(--gray-100);
+}
+
+.agi-slots-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.agi-slots-value {
+    width: 40px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+/* Selector de plan */
+.agi-plan-selector {
+    display: flex;
+    gap: 8px;
+}
+
+.agi-plan-option {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-300);
+    font-size: 13px;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.agi-plan-option.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* Link de ayuda */
+.agi-help-link {
+    text-align: center;
+    padding: 16px;
+}
+
+.agi-help-link a {
+    font-size: 13px;
+    color: var(--primary);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ========================================
+   BOTONES
+======================================== */
+.agi-btn {
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+}
+
+.agi-btn-primary {
+    background: var(--orange);
+    color: white;
+}
+
+.agi-btn-primary:hover {
+    background: var(--orange-dark);
+}
+
+.agi-btn-secondary {
+    background: white;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+}
+
+.agi-btn-secondary:hover {
+    background: #FFF7ED;
+}
+
+.agi-footer {
+    padding: 20px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ========================================
+   PANTALLA: REVISANDO
+======================================== */
+.agi-review-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.agi-review-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.agi-review-content h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0 0 4px 0;
+}
+
+.agi-review-content p {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Loader */
+.agi-loader {
+    width: 60px;
+    height: 60px;
+    margin: 40px auto;
+    position: relative;
+}
+
+.agi-loader::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 4px solid var(--gray-200);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: agi-spin 1s linear infinite;
+}
+
+@keyframes agi-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   PANTALLA: RESULTADO (Aprobado/Error/Manual)
+======================================== */
+.agi-result-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.agi-result-icon.success {
+    background: #DCFCE7;
+    color: var(--success);
+}
+
+.agi-result-icon.error {
+    background: #FEE2E2;
+    color: var(--error);
+}
+
+.agi-result-icon.warning {
+    background: #FEF3C7;
+    color: var(--warning);
+}
+
+.agi-result-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+.agi-result-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0 0 8px 0;
+}
+
+.agi-result-subtitle {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+/* Cards informativos */
+.agi-info-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.agi-info-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.agi-info-card-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0 0 2px 0;
+}
+
+.agi-info-card-content p {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.agi-info-card-content a {
+    color: var(--primary);
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+/* Cards de error */
+.agi-error-card {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.agi-error-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.agi-error-card-content h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 0 0 2px 0;
+}
+
+.agi-error-card-content p {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Card de acción */
+.agi-action-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.agi-action-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.agi-action-card-content h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 0 0 2px 0;
+}
+
+.agi-action-card-content p {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Card de acción específica por error */
+.agi-action-card-specific {
+    background: #FFF7ED;
+    border: 1px solid #FED7AA;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.agi-action-card-specific .agi-action-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #FED7AA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.agi-action-card-specific .agi-action-card-content h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 0 0 6px 0;
+}
+
+.agi-action-card-specific .agi-action-card-content p {
+    font-size: 13px;
+    color: var(--gray-700);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.agi-action-card-specific .agi-action-card-content p strong {
+    color: var(--gray-900);
+    font-weight: 600;
+}
+
+/* Nota para múltiples errores */
+.agi-multiple-errors-note {
+    background: #FEF3C7;
+    border: 1px solid #FDE68A;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.agi-multiple-errors-note p {
+    font-size: 13px;
+    color: var(--gray-700);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ========================================
+   DEMO SELECTOR (Panel de testing)
+======================================== */
+.agi-demo-toggle {
+    position: fixed;
+    bottom: 100px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(66, 66, 178, 0.4);
+    z-index: 100;
+    font-size: 20px;
+}
+
+.agi-demo-panel {
+    position: fixed;
+    bottom: 150px;
+    right: 10px;
+    width: 280px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 100;
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.agi-demo-panel.open {
+    display: block;
+}
+
+.agi-demo-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gray-800);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.agi-demo-close {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--gray-500);
+}
+
+.agi-demo-section {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.agi-demo-section:last-child {
+    border-bottom: none;
+}
+
+.agi-demo-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.agi-demo-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.agi-demo-option {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--gray-300);
+    font-size: 12px;
+    cursor: pointer;
+    background: white;
+    color: var(--gray-600);
+    transition: all 0.2s;
+}
+
+.agi-demo-option.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.agi-demo-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+    cursor: pointer;
+}
+
+.agi-demo-checkbox input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.agi-demo-counter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.agi-demo-counter button {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--gray-300);
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.agi-demo-counter span {
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* ========================================
+   PANTALLA: HOME (Comparte tus lugares libres)
+======================================== */
+.agi-home-header {
+    background: var(--primary);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.agi-home-greeting {
+    flex: 1;
+}
+
+.agi-home-greeting-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.agi-home-coronas-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.agi-home-logo {
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.agi-home-progress {
+    background: var(--gray-200);
+    height: 4px;
+    position: relative;
+}
+
+.agi-home-progress-bar {
+    width: 100%;
+    height: 100%;
+    background: var(--gray-200);
+}
+
+.agi-home-progress-fill {
+    width: 30%;
+    height: 100%;
+    background: var(--orange);
+    border-radius: 0 2px 2px 0;
+}
+
+.agi-home-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+}
+
+.agi-home-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.agi-home-action-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--orange);
+    border-radius: 12px;
+    background: white;
+    color: var(--orange);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.agi-home-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0 0 16px 0;
+}
+
+.agi-home-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.agi-home-platform-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.agi-home-platform-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.agi-home-platform-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.agi-home-platform-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-700);
+    text-align: center;
+}
+
+.agi-home-view-all {
+    width: 100%;
+    padding: 16px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.agi-home-info-section {
+    background: var(--orange);
+    padding: 20px;
+    margin-top: auto;
+}
+
+.agi-home-info-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.agi-home-info-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.agi-home-info-links a {
+    color: white;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ========================================
+   PANTALLA: PLAN SELECT
+======================================== */
+.agi-plan-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.agi-plan-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.agi-plan-card.selected {
+    border-color: var(--primary);
+    border-width: 2px;
+    background: #F0F0FF;
+}
+
+.agi-plan-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+    flex-shrink: 0;
+}
+
+.agi-plan-card-content {
+    flex: 1;
+}
+
+.agi-plan-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+}
+
+.agi-plan-card-earnings {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+}
+
+.agi-plan-card-slots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+.agi-plan-card-arrow {
+    font-size: 20px;
+    color: var(--gray-400);
+}
+
+/* ========================================
+   PANTALLA: SLOTS SELECT
+======================================== */
+.agi-slots-platform-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.agi-slots-platform-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+}
+
+.agi-slots-platform-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.agi-slots-selector-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.agi-slots-btn-large {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--orange);
+    background: var(--orange);
+    color: white;
+    font-size: 32px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.agi-slots-btn-large:not(.disabled):hover {
+    background: var(--orange-dark);
+    border-color: var(--orange-dark);
+}
+
+.agi-slots-btn-large.disabled {
+    background: var(--gray-300);
+    border-color: var(--gray-300);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.agi-slots-value-large {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gray-900);
+    min-width: 60px;
+    text-align: center;
+}
+
+.agi-slots-users {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.agi-slots-user-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.agi-slots-user-icon > span {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+}
+
+.agi-slots-user-icon.owner > span {
+    background: var(--success);
+}
+
+.agi-slots-user-icon.shared > span {
+    background: var(--orange);
+}
+
+.agi-slots-user-label {
+    font-size: 12px;
+    color: var(--gray-600);
+    text-align: center;
+}
+
+.agi-slots-earnings {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 24px;
+}
+
+/* ========================================
+   PANTALLA: FORM (Completa tus datos - nuevo diseño)
+======================================== */
+.agi-form-progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+    margin: 12px 0 16px 20px;
+}
+
+.agi-form-summary-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 20px 20px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gray-800);
+}
+
+.agi-form-section-new {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    margin: 0 20px 16px 20px;
+    overflow: hidden;
+}
+
+.agi-capture-field-new {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.agi-capture-icon-new {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-500);
+    flex-shrink: 0;
+}
+
+.agi-capture-content {
+    flex: 1;
+}
+
+.agi-capture-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+}
+
+.agi-capture-example {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.agi-form-benefit-question {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gray-800);
+    margin: 0 20px 12px 20px;
+}
+
+.agi-form-field-new {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.agi-field-icon-new {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.agi-field-input-new {
+    flex: 1;
+    border: none;
+    font-size: 14px;
+    color: var(--gray-700);
+    background: transparent;
+    outline: none;
+}
+
+.agi-field-input-new::placeholder {
+    color: var(--gray-400);
+}
+
+.agi-btn-step {
+    width: calc(100% - 40px);
+    margin: 0 20px 20px 20px;
+    padding: 14px 20px;
+    background: var(--gray-300);
+    color: var(--gray-600);
+    border: none;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Banner de instrucciones en pantalla de edición */
+.agi-edit-instruction-banner {
+    background: #FFF7ED;
+    border: 1px solid #FED7AA;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0 20px 20px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.agi-edit-instruction-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #FED7AA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.agi-edit-instruction-content {
+    flex: 1;
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.5;
+}
+
+.agi-edit-instruction-content strong {
+    color: var(--gray-900);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+</style>
+
+<script>
+(function() {
+    // ========================================
+    // CONFIGURACIÓN DE PLATAFORMAS
+    // ========================================
+    const PLATFORMS = {
+        netflix: {
+            name: 'Netflix',
+            color: '#E50914',
+            icon: 'N',
+            maxSlots: 4,
+            pricePerSlot: 2500,
+            fields: ['plan'],
+            plans: ['Premium', 'Estándar'],
+            errors: ['image', 'slots', 'plan']
+        },
+        spotify: {
+            name: 'Spotify',
+            color: '#1DB954',
+            icon: '🎵',
+            maxSlots: 5,
+            pricePerSlot: 800,
+            fields: ['address', 'country'],
+            errors: ['image', 'slots', 'address', 'country']
+        },
+        disney: {
+            name: 'Disney+',
+            color: '#113CCF',
+            icon: 'D+',
+            maxSlots: 6,
+            pricePerSlot: 1200,
+            fields: [],
+            errors: ['image', 'slots']
+        },
+        hbo: {
+            name: 'HBO Max',
+            color: '#5822B4',
+            icon: 'HBO',
+            maxSlots: 4,
+            pricePerSlot: 1800,
+            fields: ['plan'],
+            plans: ['Estándar', 'Premium'],
+            errors: ['image', 'slots', 'plan']
+        },
+        youtube: {
+            name: 'YouTube Premium',
+            color: '#FF0000',
+            icon: '▶',
+            maxSlots: 5,
+            pricePerSlot: 900,
+            fields: ['plan'],
+            plans: ['Individual', 'Familiar'],
+            errors: ['image', 'slots', 'plan']
+        },
+        prime: {
+            name: 'Prime Video',
+            color: '#00A8E1',
+            icon: '▸',
+            maxSlots: 5,
+            pricePerSlot: 700,
+            fields: [],
+            errors: ['image', 'slots']
+        },
+        paramount: {
+            name: 'Paramount+',
+            color: '#0064FF',
+            icon: '⛰',
+            maxSlots: 5,
+            pricePerSlot: 650,
+            fields: [],
+            errors: ['slots']
+        },
+        f1: {
+            name: 'F1 TV',
+            color: '#E10600',
+            icon: 'F1',
+            maxSlots: 3,
+            pricePerSlot: 1500,
+            fields: ['plan'],
+            plans: ['Premium'],
+            errors: ['plan']
+        },
+        chatgpt: {
+            name: 'ChatGPT Plus',
+            color: '#10A37F',
+            icon: '◯',
+            maxSlots: 4,
+            pricePerSlot: 3000,
+            fields: ['plan'],
+            plans: ['Plus'],
+            errors: ['plan']
+        },
+        crunchyroll: {
+            name: 'Crunchyroll',
+            color: '#F47521',
+            icon: '🍙',
+            maxSlots: 4,
+            pricePerSlot: 600,
+            fields: ['plan'],
+            plans: ['MegaFan'],
+            errors: ['plan']
+        },
+        tidal: {
+            name: 'TIDAL',
+            color: '#000000',
+            icon: '♦',
+            maxSlots: 5,
+            pricePerSlot: 1375,
+            fields: [],
+            errors: ['image', 'slots']
+        }
+    };
+
+    const ERROR_MESSAGES = {
+        image: {
+            title: '¿Cuál es el problema?',
+            message: 'Las capturas que adjuntaste no muestran la información solicitada.',
+            action: 'Sube nuevas capturas que muestren claramente la información de tu cuenta.',
+            actionDetail: 'Asegúrate de que las capturas sean nítidas y muestren la pantalla completa de tu cuenta.'
+        },
+        slots: {
+            title: '¿Cuál es el problema?',
+            message: 'No tienes cupos disponibles para compartir en Lank.',
+            action: 'Sube nuevas capturas que muestren que tienes cupos disponibles.',
+            actionDetail: 'Las capturas deben mostrar claramente la cantidad de perfiles o cupos libres en tu cuenta.'
+        },
+        plan: {
+            title: '¿Cuál es el problema?',
+            message: 'El plan de tu cuenta no es compatible con Lank.',
+            action: 'Sube nuevas capturas que muestren un plan compatible.',
+            actionDetail: 'Verifica que tu plan sea Premium, Estándar o el plan requerido según la plataforma.'
+        },
+        address: {
+            title: '¿Cuál es el problema?',
+            message: 'La dirección no coincide con la que figura en la captura.',
+            action: 'Sube nuevas capturas que muestren la dirección correcta.',
+            actionDetail: 'Asegúrate de que la dirección en las capturas coincida exactamente con la que ingresaste.'
+        },
+        country: {
+            title: '¿Cuál es el problema?',
+            message: 'El país de la cuenta no coincide con el país de la app.',
+            action: 'Sube nuevas capturas que muestren el país correcto de tu cuenta.',
+            actionDetail: 'Verifica que el país en las capturas coincida con el país de tu aplicación.'
+        }
+    };
+
+    // ========================================
+    // ESTADO DE LA APLICACIÓN
+    // ========================================
+    let state = {
+        screen: 'home', // home | platform-select | plan-select | slots-select | form | reviewing | approved | correction | edit | manual
+        platform: null,
+        selectedPlan: null, // Para Netflix: 'Premium' o 'Estándar'
+        attempts: 0,
+        errors: [],
+        adjustedSlots: false,
+        formData: {
+            email: 'ignacioagote99@gmail.com',
+            password: 'contraseña1',
+            slots: 2, // Empezar con 2 como en las capturas
+            plan: null,
+            address: 'Av. Corrientes 1234',
+            country: 'Argentina',
+            capture1: 'captura1.jpg',
+            capture2: 'captura2.jpg',
+            benefitCode: ''
+        },
+        // Demo state
+        demoResult: 'approved',
+        demoErrors: [],
+        demoPanelOpen: false
+    };
+
+    // ========================================
+    // ICONOS SVG
+    // ========================================
+    const ICONS = {
+        back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>`,
+        email: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6L12 13 2 6"/></svg>`,
+        password: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+        image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`,
+        slots: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`,
+        location: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+        globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+        check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>`,
+        x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>`,
+        warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`,
+        search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
+        money: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
+        bank: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>`,
+        settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`
+    };
+
+    // ========================================
+    // RENDERIZADO
+    // ========================================
+    function render() {
+        const app = document.getElementById('agi-app');
+        let html = '';
+
+        switch (state.screen) {
+            case 'home':
+                html = renderHome();
+                break;
+            case 'platform-select':
+                html = renderPlatformSelect();
+                break;
+            case 'plan-select':
+                html = renderPlanSelect();
+                break;
+            case 'slots-select':
+                html = renderSlotsSelect();
+                break;
+            case 'form':
+                html = renderForm();
+                break;
+            case 'reviewing':
+                html = renderReviewing();
+                break;
+            case 'approved':
+                html = renderApproved();
+                break;
+            case 'correction':
+                html = renderCorrection();
+                break;
+            case 'edit':
+                html = renderEdit();
+                break;
+            case 'manual':
+                html = renderManual();
+                break;
+        }
+
+        // Agregar panel demo
+        html += renderDemoPanel();
+
+        app.innerHTML = html;
+    }
+
+    // ========================================
+    // PANTALLAS
+    // ========================================
+    function renderHome() {
+        // Plataformas populares según las capturas
+        const popularPlatforms = ['netflix', 'chatgpt', 'disney', 'spotify', 'hbo', 'prime'];
+        const platformCards = popularPlatforms.map(key => {
+            const p = PLATFORMS[key];
+            return `
+                <div class="agi-home-platform-card" data-action="select-platform" data-platform="${key}">
+                    <div class="agi-home-platform-logo ${key}" style="background: ${p.color}">${p.icon}</div>
+                    <div class="agi-home-platform-name">${p.name}</div>
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="agi-content" style="padding: 0;">
+                <div class="agi-home-header">
+                    <div class="agi-home-greeting">
+                        <div class="agi-home-greeting-text">¡Hola Agustin!</div>
+                        <button class="agi-home-coronas-btn">
+                            Ver coronas <span style="font-size: 12px;">?</span>
+                        </button>
+                    </div>
+                    <div class="agi-home-logo">L</div>
+                </div>
+                <div class="agi-home-progress">
+                    <div class="agi-home-progress-bar">
+                        <div class="agi-home-progress-fill"></div>
+                    </div>
+                </div>
+                <div class="agi-content" style="padding: 20px; padding-top: 16px;">
+                    <h1 class="agi-home-title">Comparte tus lugares libres</h1>
+                    
+                    <div class="agi-home-actions">
+                        <button class="agi-home-action-btn">
+                            <span style="font-size: 20px;">🐷</span>
+                            <span>¿Cuánto ahorro?</span>
+                        </button>
+                        <button class="agi-home-action-btn">
+                            <span style="font-size: 20px;">▶</span>
+                            <span>Tutorial</span>
+                        </button>
+                    </div>
+                    
+                    <h2 class="agi-home-section-title">Suscripciones populares</h2>
+                    
+                    <div class="agi-home-platform-grid">
+                        ${platformCards}
+                    </div>
+                    
+                    <button class="agi-home-view-all" data-action="view-all-platforms">
+                        Ver todas las plataformas →
+                    </button>
+                </div>
+                
+                <div class="agi-home-info-section">
+                    <div class="agi-home-info-title">INFORMACIÓN</div>
+                    <div class="agi-home-info-links">
+                        <a>Preguntas Frecuentes</a>
+                        <a>Beneficios Universidades</a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPlanSelect() {
+        const p = PLATFORMS[state.platform];
+        if (!p || !p.plans) {
+            // Si no tiene planes, saltar directamente a slots
+            state.screen = 'slots-select';
+            return render();
+        }
+
+        const planCards = p.plans.map(plan => {
+            const isSelected = state.selectedPlan === plan;
+            const slots = plan === 'Premium' ? 3 : 2;
+            const earnings = slots * p.pricePerSlot;
+            
+            return `
+                <div class="agi-plan-card ${isSelected ? 'selected' : ''}" data-action="select-plan-option" data-plan="${plan}">
+                    <div class="agi-plan-card-icon">${p.icon}</div>
+                    <div class="agi-plan-card-content">
+                        <div class="agi-plan-card-title">${p.name} ${plan}</div>
+                        <div class="agi-plan-card-earnings">Ganas por mes: $${earnings.toLocaleString()} por cada cupo.</div>
+                        <div class="agi-plan-card-slots">
+                            <span style="font-size: 16px;">👥</span>
+                            <span>${slots}</span>
+                        </div>
+                    </div>
+                    <div class="agi-plan-card-arrow">→</div>
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="agi-header">
+                <div class="agi-header-back" data-action="go-back">${ICONS.back}</div>
+                <div class="agi-header-title">Elige tu plan</div>
+            </div>
+            <div class="agi-content">
+                ${planCards}
+            </div>
+            <div class="agi-home-info-section">
+                <div class="agi-home-info-title">INFORMACIÓN</div>
+                <div class="agi-home-info-links">
+                    <a>Preguntas Frecuentes</a>
+                    <a>Beneficios Universidades</a>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderSlotsSelect() {
+        const p = PLATFORMS[state.platform];
+        const maxSlots = state.selectedPlan === 'Premium' ? 3 : 2;
+        const earnings = state.formData.slots * p.pricePerSlot;
+        
+        // Generar iconos de usuarios
+        const userIcons = [];
+        userIcons.push(`<div class="agi-slots-user-icon owner"><span>A</span><div class="agi-slots-user-label">Tú</div></div>`);
+        for (let i = 0; i < state.formData.slots; i++) {
+            userIcons.push(`<div class="agi-slots-user-icon shared"><span>👤</span><div class="agi-slots-user-label">Compartido</div></div>`);
+        }
+
+        return `
+            <div class="agi-header">
+                <div class="agi-header-back" data-action="go-back">${ICONS.back}</div>
+                <div class="agi-header-title">¿Cuántos cupos quieres compartir?</div>
+                <div class="agi-header-help" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">?</div>
+            </div>
+            <div class="agi-content">
+                <div class="agi-slots-platform-card">
+                    <div class="agi-slots-platform-logo" style="background: ${p.color}">${p.icon}</div>
+                    <div class="agi-slots-platform-name">${p.name} ${state.selectedPlan || ''}</div>
+                </div>
+                
+                <div class="agi-slots-selector-container">
+                    <button class="agi-slots-btn-large ${state.formData.slots <= 1 ? 'disabled' : ''}" data-action="decrease-slots">−</button>
+                    <div class="agi-slots-value-large">${state.formData.slots}</div>
+                    <button class="agi-slots-btn-large ${state.formData.slots >= maxSlots ? 'disabled' : ''}" data-action="increase-slots">+</button>
+                </div>
+                
+                <div class="agi-slots-users">
+                    ${userIcons.join('')}
+                </div>
+                
+                <div class="agi-slots-earnings">
+                    Ganas $${earnings.toLocaleString()} por mes.
+                </div>
+                
+                <button class="agi-btn agi-btn-primary" data-action="go-to-form" style="margin-top: 24px;">
+                    Siguiente →
+                </button>
+            </div>
+            <div class="agi-home-info-section">
+                <div class="agi-home-info-title">INFORMACIÓN</div>
+                <div class="agi-home-info-links">
+                    <a>Preguntas Frecuentes</a>
+                    <a>Beneficios Universidades</a>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPlatformSelect() {
+        const platformCards = Object.entries(PLATFORMS).map(([key, p]) => `
+            <div class="agi-platform-card" data-action="select-platform" data-platform="${key}">
+                <div class="agi-platform-logo ${key}" style="background: ${p.color}">${p.icon}</div>
+                <div class="agi-platform-name">${p.name}</div>
+            </div>
+        `).join('');
+
+        return `
+            <div class="agi-header">
+                <div class="agi-header-title">Selecciona una plataforma</div>
+            </div>
+            <div class="agi-content">
+                <div class="agi-platform-grid">
+                    ${platformCards}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderForm() {
+        const p = PLATFORMS[state.platform];
+        const pricePerUser = p.pricePerSlot;
+        const planName = state.selectedPlan ? `${p.name} ${state.selectedPlan}` : p.name;
+        
+        return `
+            <div class="agi-header">
+                <div class="agi-header-back" data-action="go-back">${ICONS.back}</div>
+                <div class="agi-header-title">Completa tus datos</div>
+            </div>
+            <div class="agi-content" style="background: #F5F5F5;">
+                <div class="agi-form-progress-dot"></div>
+                
+                <div class="agi-form-summary-card">
+                    ${planName} - ${state.formData.slots} cupos - $${pricePerUser.toLocaleString()} por usuario
+                </div>
+                
+                <div class="agi-form-section-new">
+                    <div class="agi-capture-field-new">
+                        <div class="agi-capture-icon-new">${ICONS.image}</div>
+                        <div class="agi-capture-content">
+                            <div class="agi-capture-title">Adjuntar captura - Tipo de suscripcion</div>
+                            <div class="agi-capture-example">Ejemplo de captura</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agi-form-benefit-question">
+                    ¿Tienes un código de beneficio?
+                </div>
+                
+                <div class="agi-form-section-new">
+                    <div class="agi-form-field-new">
+                        <div class="agi-field-icon-new">📋</div>
+                        <input type="text" class="agi-field-input-new" placeholder="Ingresa el código" data-field="benefitCode" value="${state.formData.benefitCode}">
+                    </div>
+                </div>
+                
+                <button class="agi-btn-step" data-action="create-group">
+                    ¡Un paso más! →
+                </button>
+            </div>
+            <div class="agi-home-info-section">
+                <div class="agi-home-info-title">INFORMACIÓN</div>
+                <div class="agi-home-info-links">
+                    <a>Preguntas Frecuentes</a>
+                    <a>Beneficios Universidades</a>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderReviewing() {
+        return `
+            <div class="agi-header">
+                <div class="agi-header-title">¡Ya Lankeaste tu grupo!</div>
+            </div>
+            <div class="agi-content centered">
+                <div class="agi-review-card">
+                    <div class="agi-review-icon">🔍</div>
+                    <div class="agi-review-content">
+                        <h3>¡Lo estamos revisando!</h3>
+                        <p>Espera unos segundos mientras nos aseguramos que todo esté en orden.</p>
+                    </div>
+                </div>
+                <div class="agi-loader"></div>
+            </div>
+        `;
+    }
+
+    function renderApproved() {
+        const p = PLATFORMS[state.platform];
+        
+        let adjustedCard = '';
+        if (state.adjustedSlots) {
+            adjustedCard = `
+                <div class="agi-info-card">
+                    <div class="agi-info-card-icon">👥</div>
+                    <div class="agi-info-card-content">
+                        <h4>Compartiste ${state.formData.slots} cupos en Lank</h4>
+                        <p>Basado en lo que indicaban las capturas adjuntadas.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="agi-header">
+                <div class="agi-header-title"></div>
+            </div>
+            <div class="agi-content centered">
+                <div class="agi-result-icon success">${ICONS.check}</div>
+                <h2 class="agi-result-title">¡Tu grupo fue aprobado!</h2>
+                <p class="agi-result-subtitle">Ya está publicado y otros Lankers pueden unirse.</p>
+                
+                ${adjustedCard}
+                
+                <div class="agi-info-card">
+                    <div class="agi-info-card-icon">💰</div>
+                    <div class="agi-info-card-content">
+                        <h4>¿Cuándo recibirás tu pago?</h4>
+                        <p>A los 30 días de que un usuario se una a tu grupo.</p>
+                    </div>
+                </div>
+                
+                <div class="agi-info-card">
+                    <div class="agi-info-card-icon">🏦</div>
+                    <div class="agi-info-card-content">
+                        <h4><a>Carga tu cuenta bancaria</a></h4>
+                        <p>Para recibir tus pagos a tiempo y sin problemas.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="agi-footer">
+                <button class="agi-btn agi-btn-primary" data-action="view-group">Ver grupo</button>
+            </div>
+        `;
+    }
+
+    function renderCorrection() {
+        // Si hay error de imagen inválida, es bloqueante - solo mostrar ese
+        const hasImageError = state.errors.includes('image');
+        const errorsToShow = hasImageError ? ['image'] : state.errors;
+        
+        // Generar cards de error con acciones específicas
+        const errorCards = errorsToShow.map(err => {
+            const errInfo = ERROR_MESSAGES[err];
+            return `
+                <div class="agi-error-card">
+                    <div class="agi-error-card-icon">😟</div>
+                    <div class="agi-error-card-content">
+                        <h4>${errInfo.title}</h4>
+                        <p>${errInfo.message}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Generar cards de acción específicas para cada error
+        const actionCards = errorsToShow.map(err => {
+            const errInfo = ERROR_MESSAGES[err];
+            return `
+                <div class="agi-action-card-specific">
+                    <div class="agi-action-card-icon">📸</div>
+                    <div class="agi-action-card-content">
+                        <h4>¿Qué puedo hacer?</h4>
+                        <p><strong>${errInfo.action}</strong></p>
+                        <p style="font-size: 12px; color: var(--gray-500); margin-top: 4px;">${errInfo.actionDetail}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Si hay múltiples errores, agregar mensaje general
+        const multipleErrorsNote = errorsToShow.length > 1 ? `
+            <div class="agi-multiple-errors-note">
+                <p>Detectamos ${errorsToShow.length} problemas en tu grupo. Revisa cada uno y corrige las capturas necesarias.</p>
+            </div>
+        ` : '';
+
+        return `
+            <div class="agi-header">
+                <div class="agi-header-title"></div>
+            </div>
+            <div class="agi-content centered">
+                <div class="agi-result-icon error">${ICONS.x}</div>
+                <h2 class="agi-result-title">Parece que algo salió mal</h2>
+                
+                ${errorCards}
+                
+                ${multipleErrorsNote}
+                
+                ${actionCards}
+            </div>
+            <div class="agi-footer">
+                <button class="agi-btn agi-btn-primary" data-action="review-captures">
+                    📸 Revisar capturas
+                </button>
+                <button class="agi-btn agi-btn-secondary" data-action="delete-group">
+                    🗑 Borrar grupo
+                </button>
+            </div>
+        `;
+    }
+
+    function renderEdit() {
+        const p = PLATFORMS[state.platform];
+        
+        const getFieldStatus = (field) => {
+            if (state.errors.includes(field)) {
+                return `<div class="agi-field-status error">${ICONS.x}</div>`;
+            }
+            return '';
+        };
+
+        const isFieldError = (field) => state.errors.includes(field);
+        
+        let additionalFields = '';
+        
+        if (p.fields.includes('plan')) {
+            const planOptions = p.plans.map(plan => 
+                `<div class="agi-plan-option ${state.formData.plan === plan ? 'selected' : ''}" data-action="select-plan" data-plan="${plan}">${plan}</div>`
+            ).join('');
+            
+            additionalFields += `
+                <div class="agi-form-field ${isFieldError('plan') ? 'has-error' : 'readonly'}">
+                    <div class="agi-field-icon">${ICONS.settings}</div>
+                    <div class="agi-field-content">
+                        <div class="agi-plan-selector">${planOptions}</div>
+                    </div>
+                    ${getFieldStatus('plan')}
+                </div>
+            `;
+        }
+        
+        if (p.fields.includes('address')) {
+            additionalFields += `
+                <div class="agi-form-field ${isFieldError('address') ? 'has-error' : 'readonly'}">
+                    <div class="agi-field-icon">${ICONS.location}</div>
+                    <div class="agi-field-content">
+                        <input type="text" class="agi-field-input" value="${state.formData.address}" ${isFieldError('address') ? '' : 'disabled'} data-field="address">
+                    </div>
+                    ${getFieldStatus('address')}
+                </div>
+            `;
+        }
+        
+        if (p.fields.includes('country')) {
+            additionalFields += `
+                <div class="agi-form-field ${isFieldError('country') ? 'has-error' : 'readonly'}">
+                    <div class="agi-field-icon">${ICONS.globe}</div>
+                    <div class="agi-field-content">
+                        <input type="text" class="agi-field-input" value="${state.formData.country}" ${isFieldError('country') ? '' : 'disabled'} data-field="country">
+                    </div>
+                    ${getFieldStatus('country')}
+                </div>
+            `;
+        }
+
+        const captureHasError = state.errors.includes('image') || state.errors.includes('slots') || state.errors.includes('plan') || state.errors.includes('address') || state.errors.includes('country');
+        
+        // Generar instrucciones específicas según los errores
+        const errorInstructions = state.errors.map(err => {
+            const errInfo = ERROR_MESSAGES[err];
+            return errInfo.action;
+        }).join(' ');
+
+        const instructionBanner = state.errors.length > 0 ? `
+            <div class="agi-edit-instruction-banner">
+                <div class="agi-edit-instruction-icon">📸</div>
+                <div class="agi-edit-instruction-content">
+                    <strong>Para corregir:</strong> ${errorInstructions}
+                </div>
+            </div>
+        ` : '';
+
+        return `
+            <div class="agi-header">
+                <div class="agi-header-back" data-action="go-correction">${ICONS.back}</div>
+                <div class="agi-header-title">Completa tus datos</div>
+            </div>
+            <div class="agi-content">
+                ${instructionBanner}
+                
+                <div class="agi-platform-info">
+                    <div class="agi-platform-info-logo" style="background: ${p.color}">${p.icon}</div>
+                    <div class="agi-platform-info-details">
+                        <div class="agi-platform-info-name">${p.name}</div>
+                        <div class="agi-platform-info-slots">${p.maxSlots} cupos</div>
+                        <div class="agi-platform-info-price"><span>$${p.pricePerSlot.toLocaleString()}</span>/mes por cupo</div>
+                    </div>
+                </div>
+                
+                <div class="agi-form-section">
+                    <div class="agi-form-field readonly">
+                        <div class="agi-field-icon">${ICONS.email}</div>
+                        <div class="agi-field-content">
+                            <input type="email" class="agi-field-input" value="${state.formData.email}" disabled>
+                        </div>
+                    </div>
+                    <div class="agi-form-field readonly">
+                        <div class="agi-field-icon">${ICONS.password}</div>
+                        <div class="agi-field-content">
+                            <input type="password" class="agi-field-input" value="${state.formData.password}" disabled>
+                        </div>
+                    </div>
+                    <div class="agi-form-field readonly">
+                        <div class="agi-field-icon">${ICONS.password}</div>
+                        <div class="agi-field-content">
+                            <input type="password" class="agi-field-input" value="${state.formData.password}" disabled>
+                        </div>
+                    </div>
+                    ${additionalFields}
+                    <div class="agi-form-field ${isFieldError('slots') ? 'has-error' : 'readonly'}">
+                        <div class="agi-field-icon">${ICONS.slots}</div>
+                        <div class="agi-field-content" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; color: var(--gray-700);">Cupos a compartir</span>
+                            ${isFieldError('slots') ? `
+                                <div class="agi-slots-selector">
+                                    <button class="agi-slots-btn" data-action="decrease-slots" ${state.formData.slots <= 1 ? 'disabled' : ''}>−</button>
+                                    <span class="agi-slots-value">${state.formData.slots}</span>
+                                    <button class="agi-slots-btn" data-action="increase-slots" ${state.formData.slots >= p.maxSlots ? 'disabled' : ''}>+</button>
+                                </div>
+                            ` : `<span style="font-size: 14px; color: var(--gray-500);">${state.formData.slots}</span>`}
+                        </div>
+                        ${getFieldStatus('slots')}
+                    </div>
+                </div>
+                
+                <div class="agi-form-section">
+                    <div class="agi-capture-field ${captureHasError ? 'has-error' : ''}">
+                        <div class="agi-capture-row">
+                            <div class="agi-capture-icon">${ICONS.image}</div>
+                            <div class="agi-capture-name">${state.formData.capture1}</div>
+                            ${captureHasError ? `<div class="agi-field-status error">${ICONS.x}</div>` : ''}
+                        </div>
+                        <div class="agi-capture-link">${captureHasError ? 'Sube una nueva captura' : 'Ejemplo de captura'}</div>
+                    </div>
+                    <div class="agi-capture-field ${captureHasError ? 'has-error' : ''}">
+                        <div class="agi-capture-row">
+                            <div class="agi-capture-icon">${ICONS.image}</div>
+                            <div class="agi-capture-name">${state.formData.capture2}</div>
+                            ${captureHasError ? `<div class="agi-field-status error">${ICONS.x}</div>` : ''}
+                        </div>
+                        <div class="agi-capture-link">${captureHasError ? 'Sube una nueva captura' : 'Ejemplo de captura'}</div>
+                    </div>
+                </div>
+                
+                <div class="agi-help-link">
+                    <a>¿Dónde encuentro las capturas?</a>
+                </div>
+            </div>
+            <div class="agi-footer">
+                <button class="agi-btn agi-btn-primary" data-action="retry-group">Ya revisé mis capturas</button>
+            </div>
+        `;
+    }
+
+    function renderManual() {
+        return `
+            <div class="agi-header">
+                <div class="agi-header-title"></div>
+            </div>
+            <div class="agi-content centered">
+                <div class="agi-result-icon warning">${ICONS.warning}</div>
+                <h2 class="agi-result-title">Vamos a revisar tu grupo manualmente</h2>
+                <p class="agi-result-subtitle">No pudimos validarlo automáticamente. Nuestro equipo lo revisará y te avisaremos.</p>
+                
+                <div class="agi-info-card">
+                    <div class="agi-info-card-icon">💬</div>
+                    <div class="agi-info-card-content">
+                        <h4>Chat con soporte</h4>
+                        <p>Comunícate directamente con nuestro equipo de expertos.<br><small style="color: var(--gray-400);">De 9 a 23 hs · Demora estimada: 8 hs</small></p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ========================================
+    // PANEL DEMO
+    // ========================================
+    function renderDemoPanel() {
+        const p = state.platform ? PLATFORMS[state.platform] : null;
+        const availableErrors = p ? p.errors : ['image', 'slots', 'plan', 'address', 'country'];
+        
+        const errorCheckboxes = availableErrors.map(err => `
+            <label class="agi-demo-checkbox">
+                <input type="checkbox" data-action="toggle-error" data-error="${err}" ${state.demoErrors.includes(err) ? 'checked' : ''}>
+                ${ERROR_MESSAGES[err].message.substring(0, 40)}...
+            </label>
+        `).join('');
+
+        return `
+            <button class="agi-demo-toggle" data-action="toggle-demo">⚙</button>
+            <div class="agi-demo-panel ${state.demoPanelOpen ? 'open' : ''}">
+                <div class="agi-demo-header">
+                    Demo Controls
+                    <button class="agi-demo-close" data-action="toggle-demo">×</button>
+                </div>
+                
+                <div class="agi-demo-section">
+                    <div class="agi-demo-label">Resultado a simular</div>
+                    <div class="agi-demo-options">
+                        <div class="agi-demo-option ${state.demoResult === 'approved' ? 'selected' : ''}" data-action="set-result" data-result="approved">Aprobado</div>
+                        <div class="agi-demo-option ${state.demoResult === 'correction' ? 'selected' : ''}" data-action="set-result" data-result="correction">Corrección</div>
+                        <div class="agi-demo-option ${state.demoResult === 'manual' ? 'selected' : ''}" data-action="set-result" data-result="manual">Manual</div>
+                    </div>
+                </div>
+                
+                <div class="agi-demo-section">
+                    <div class="agi-demo-label">Errores activos</div>
+                    ${errorCheckboxes}
+                </div>
+                
+                <div class="agi-demo-section">
+                    <div class="agi-demo-label">Intentos: ${state.attempts}</div>
+                    <div class="agi-demo-counter">
+                        <button data-action="decrease-attempts">−</button>
+                        <span>${state.attempts}</span>
+                        <button data-action="increase-attempts">+</button>
+                    </div>
+                </div>
+                
+                <div class="agi-demo-section">
+                    <label class="agi-demo-checkbox">
+                        <input type="checkbox" data-action="toggle-adjusted" ${state.adjustedSlots ? 'checked' : ''}>
+                        Cupos ajustados
+                    </label>
+                </div>
+                
+                <div class="agi-demo-section">
+                    <div class="agi-demo-label">Ir a pantalla</div>
+                    <div class="agi-demo-options">
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="home">Home</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="platform-select">Plataformas</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="plan-select">Plan</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="slots-select">Cupos</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="form">Form</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="approved">OK</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="correction">Error</div>
+                        <div class="agi-demo-option" data-action="go-screen" data-screen="manual">Manual</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ========================================
+    // EVENT LISTENERS
+    // ========================================
+    function attachEventListeners() {
+        const app = document.getElementById('agi-app');
+        
+        app.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+            
+            e.stopPropagation(); // Evitar propagación de eventos
+            
+            const action = target.dataset.action;
+            
+            switch (action) {
+                case 'view-all-platforms':
+                    state.screen = 'platform-select';
+                    render();
+                    break;
+                    
+                case 'select-platform':
+                    state.platform = target.dataset.platform;
+                    const platform = PLATFORMS[state.platform];
+                    if (platform.plans && platform.plans.length > 0) {
+                        state.screen = 'plan-select';
+                        state.selectedPlan = null;
+                    } else {
+                        // Si no tiene planes, ir directo a slots
+                        state.screen = 'slots-select';
+                        state.selectedPlan = null;
+                    }
+                    render();
+                    break;
+                    
+                case 'select-plan-option':
+                    state.selectedPlan = target.dataset.plan;
+                    state.formData.plan = target.dataset.plan;
+                    // Actualizar slots según el plan
+                    if (target.dataset.plan === 'Premium') {
+                        state.formData.slots = 3;
+                    } else {
+                        state.formData.slots = 2;
+                    }
+                    state.screen = 'slots-select';
+                    render();
+                    break;
+                    
+                case 'go-to-form':
+                    state.screen = 'form';
+                    render();
+                    break;
+                    
+                case 'go-back':
+                    // Navegación hacia atrás según la pantalla actual
+                    if (state.screen === 'form') {
+                        state.screen = 'slots-select';
+                    } else if (state.screen === 'slots-select') {
+                        if (PLATFORMS[state.platform].plans && PLATFORMS[state.platform].plans.length > 0) {
+                            state.screen = 'plan-select';
+                        } else {
+                            state.screen = state.platform ? 'home' : 'platform-select';
+                        }
+                    } else if (state.screen === 'plan-select') {
+                        state.screen = state.platform ? 'home' : 'platform-select';
+                    } else if (state.screen === 'platform-select') {
+                        state.screen = 'home';
+                    } else if (state.screen === 'correction' || state.screen === 'edit') {
+                        state.screen = 'form';
+                    } else {
+                        state.screen = 'home';
+                        state.attempts = 0;
+                    }
+                    render();
+                    break;
+                    
+                case 'go-correction':
+                    state.screen = 'correction';
+                    render();
+                    break;
+                    
+                case 'select-plan':
+                    state.formData.plan = target.dataset.plan;
+                    render();
+                    break;
+                    
+                case 'decrease-slots':
+                    if (state.formData.slots > 1) {
+                        state.formData.slots--;
+                        render();
+                    }
+                    break;
+                    
+                case 'increase-slots':
+                    // Calcular max según plan seleccionado
+                    let maxSlots = PLATFORMS[state.platform].maxSlots;
+                    if (state.selectedPlan === 'Premium') {
+                        maxSlots = 3;
+                    } else if (state.selectedPlan === 'Estándar' || state.selectedPlan === 'Standard') {
+                        maxSlots = 2;
+                    }
+                    if (state.formData.slots < maxSlots) {
+                        state.formData.slots++;
+                        render();
+                    }
+                    break;
+                    
+                case 'create-group':
+                case 'retry-group':
+                    state.attempts++;
+                    state.screen = 'reviewing';
+                    render();
+                    
+                    // Simular delay de revisión
+                    setTimeout(() => {
+                        if (state.attempts >= 3 && state.demoResult === 'correction') {
+                            state.screen = 'manual';
+                        } else if (state.demoResult === 'approved') {
+                            state.screen = 'approved';
+                        } else if (state.demoResult === 'correction') {
+                            state.errors = state.demoErrors.length > 0 ? state.demoErrors : ['image'];
+                            state.screen = 'correction';
+                        } else if (state.demoResult === 'manual') {
+                            state.screen = 'manual';
+                        }
+                        render();
+                    }, 3000);
+                    break;
+                    
+                case 'review-captures':
+                    state.screen = 'edit';
+                    render();
+                    break;
+                    
+                case 'delete-group':
+                    state.screen = 'platform-select';
+                    state.attempts = 0;
+                    state.errors = [];
+                    render();
+                    break;
+                    
+                case 'view-group':
+                    // En el prototipo, volver al inicio
+                    state.screen = 'platform-select';
+                    state.attempts = 0;
+                    render();
+                    break;
+                    
+                // Demo actions
+                case 'toggle-demo':
+                    state.demoPanelOpen = !state.demoPanelOpen;
+                    render();
+                    break;
+                    
+                case 'set-result':
+                    state.demoResult = target.dataset.result;
+                    render();
+                    break;
+                    
+                case 'toggle-error':
+                    const err = target.dataset.error;
+                    // El target puede ser el input o el label, buscar el input
+                    const checkbox = target.tagName === 'INPUT' ? target : target.querySelector('input');
+                    if (checkbox && checkbox.checked) {
+                        if (!state.demoErrors.includes(err)) state.demoErrors.push(err);
+                    } else {
+                        state.demoErrors = state.demoErrors.filter(e => e !== err);
+                    }
+                    render();
+                    break;
+                    
+                case 'decrease-attempts':
+                    if (state.attempts > 0) {
+                        state.attempts--;
+                        render();
+                    }
+                    break;
+                    
+                case 'increase-attempts':
+                    state.attempts++;
+                    render();
+                    break;
+                    
+                case 'toggle-adjusted':
+                    // El target puede ser el input o el label, buscar el input
+                    const adjustedCheckbox = target.tagName === 'INPUT' ? target : target.querySelector('input');
+                    state.adjustedSlots = adjustedCheckbox ? adjustedCheckbox.checked : !state.adjustedSlots;
+                    render();
+                    break;
+                    
+                case 'go-screen':
+                    const targetScreen = target.dataset.screen;
+                    // Configurar estado necesario según la pantalla
+                    if (targetScreen === 'form' && !state.platform) {
+                        state.platform = 'netflix';
+                        state.selectedPlan = 'Premium';
+                        state.formData.slots = 2;
+                    } else if (targetScreen === 'plan-select' && !state.platform) {
+                        state.platform = 'netflix';
+                    } else if (targetScreen === 'slots-select' && !state.platform) {
+                        state.platform = 'netflix';
+                        state.selectedPlan = 'Premium';
+                    }
+                    state.screen = targetScreen;
+                    if (targetScreen === 'correction') {
+                        state.errors = state.demoErrors.length > 0 ? state.demoErrors : ['image'];
+                    }
+                    render();
+                    break;
+            }
+        });
+        
+        // Input changes
+        app.addEventListener('input', (e) => {
+            if (e.target.dataset.field) {
+                state.formData[e.target.dataset.field] = e.target.value;
+            }
+        });
+        
+        // Change events para checkboxes (más confiable que click)
+        app.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox' && e.target.dataset.action) {
+                const action = e.target.dataset.action;
+                e.stopPropagation();
+                
+                switch (action) {
+                    case 'toggle-error':
+                        const err = e.target.dataset.error;
+                        if (e.target.checked) {
+                            if (!state.demoErrors.includes(err)) state.demoErrors.push(err);
+                        } else {
+                            state.demoErrors = state.demoErrors.filter(e => e !== err);
+                        }
+                        render();
+                        break;
+                        
+                    case 'toggle-adjusted':
+                        state.adjustedSlots = e.target.checked;
+                        render();
+                        break;
+                }
+            }
+        });
+    }
+
+    // ========================================
+    // INICIALIZAR
+    // ========================================
+    attachEventListeners(); // Solo una vez al inicio
+    render();
+})();
+</script>
