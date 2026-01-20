@@ -1,0 +1,623 @@
+<!-- Feature: Plataformas (Buscador mejorado) -->
+<div class="plataformas-feature" id="plataformas-app">
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="greeting">¡Hola Agustin!</div>
+            <img src="logo-lank.svg" alt="Lank" class="header-logo" onerror="this.src='imgs/lank-logo.svg'">
+        </div>
+        <button class="coronas-btn">
+            Ver coronas
+            <div class="help-icon">?</div>
+        </button>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="platform-search" placeholder="¿Qué suscripción buscás?" autocomplete="off">
+            <div class="search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Dropdown Predictivo -->
+        <div id="search-dropdown" class="search-dropdown" style="display: none;">
+            <!-- Results will be injected here -->
+        </div>
+    </div>
+
+    <!-- Grid de Plataformas -->
+    <div class="platforms-grid" id="platforms-grid">
+        <!-- Platform cards will be injected here -->
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="bottom-cta-container">
+        <div class="bottom-cta-text">¿Buscas una suscripción que no tenemos?</div>
+        <button class="bottom-cta-btn" id="open-request-modal">
+            ¡Solicítala aquí y la creamos!
+        </button>
+    </div>
+
+    <!-- Modal de Solicitud -->
+    <div id="request-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Recomendanos la plataforma que quieras</h3>
+                <button class="modal-close" id="close-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="request-input" placeholder="Plataforma que buscas">
+                <button class="modal-submit" id="submit-request">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+/* Variables y Reset local */
+.plataformas-feature {
+    --primary: #4242B2;
+    --orange: #F5A623;
+    --bg-color: #4242B2; /* Fondo azul oscuro del header */
+    --card-bg: white;
+    --text-dark: #333;
+    --text-light: white;
+    --gray-100: #f5f5f5;
+    --gray-200: #e0e0e0;
+    --gray-500: #757575;
+    
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-color);
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow-y: auto;
+}
+
+.plataformas-feature * {
+    box-sizing: border-box;
+}
+
+/* Header */
+.header {
+    margin-bottom: 20px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.greeting {
+    font-size: 18px;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.header-logo {
+    height: 24px;
+    width: auto;
+}
+
+.coronas-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.help-icon {
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Search Bar */
+.search-container {
+    position: relative;
+    margin-bottom: 24px;
+    z-index: 100;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+#platform-search {
+    width: 100%;
+    padding: 12px 16px 12px 38px; /* Reducido de 44px */
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    outline: none;
+    color: var(--text-dark);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 48px;
+}
+
+#platform-search::placeholder {
+    color: var(--gray-500);
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px; /* Ajustado */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-500);
+    pointer-events: none;
+    background: transparent;
+}
+
+.search-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Dropdown */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    margin-top: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-dark);
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover, .search-result-item.selected {
+    background: #f0f0f5;
+    color: var(--primary);
+}
+
+/* Empty State inside Dropdown */
+.dropdown-empty-state {
+    padding: 20px;
+    text-align: center;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.empty-subtitle {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin-bottom: 16px;
+}
+
+.empty-cta-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Grid */
+.platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-bottom: 100px;
+}
+
+.platform-card {
+    background: white;
+    border-radius: 6px; /* Bordes un poco menos redondeados para altura chica */
+    padding: 0 4px; /* Padding vertical 0 para centrar bien */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 48px; /* Aún más bajo */
+    cursor: pointer;
+    transition: transform 0.1s;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.1;
+    overflow: hidden;
+}
+
+.platform-card:active {
+    transform: scale(0.98);
+}
+
+/* Bottom CTA section */
+.bottom-cta-container {
+    margin-top: 30px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.bottom-cta-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.bottom-cta-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 320px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    color: var(--text-dark);
+    margin: 0;
+    padding-right: 20px;
+    line-height: 1.3;
+}
+
+.modal-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 5px;
+}
+
+.modal-body input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 16px;
+    outline: none;
+}
+
+.modal-body input:focus {
+    border-color: var(--primary);
+}
+
+.modal-submit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-submit:hover {
+    background: #353590;
+}
+
+/* Responsive adjustments if needed */
+@media (max-height: 600px) {
+    .plataformas-feature {
+        padding-bottom: 60px;
+    }
+}
+</style>
+
+<script>
+(function() {
+    // ==========================================
+    // DATA & CONFIG
+    // ==========================================
+    const RAW_PLATFORMS = [
+        "AmazonMusic", "AppleMusic", "AppleOne",
+        "AppleTV+", "AtresPlayer", "Avast",
+        "Calm", "CanvaPro", "CapCut",
+        "ChatGPT", "Copy.ai", "Creator.ai",
+        "Crunchyroll", "Curiosity4K", "CyberGhost",
+        "Dazn", "Deezer", "Diario Financiero",
+        "DirectTVGO", "Disney+", "Dropbox",
+        "Duolingo", "El Mercurio", "EstudiosNeverland",
+        "ExpressVPN", "F1 TV", "Gaia",
+        "Gemini AI", "Gestor de contraseñas", "GoogleOne",
+        "HBO Max", "Headspace", "Hulu",
+        "iCloud", "Kaspersky", "LastPass",
+        "MasterClass", "Microsoft 365", "Mubi",
+        "NBA League Pass", "Netflix", "Nintendo Switch Online",
+        "NordVPN", "Paramount+", "Peacock",
+        "PlayStation Plus", "Prime Video", "Scribd",
+        "Skillshare", "Slack", "SoundCloud",
+        "Spotify", "Star+", "Steam",
+        "Tidal", "Twitch", "Udemy",
+        "Vix", "Win Sports", "Xbox Game Pass",
+        "YouTube Premium", "Zoom"
+    ];
+
+    // Función de normalización (Case insensitive, accent insensitive, mantiene "+")
+    function normalize(text) {
+        if (!text) return "";
+        return text
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Eliminar diacríticos
+            .replace(/\s+/g, " "); // Colapsar espacios
+    }
+
+    // Precomputar datos
+    const PLATFORMS = RAW_PLATFORMS.map(name => ({
+        name: name,
+        searchKey: normalize(name)
+    })).sort((a, b) => a.name.localeCompare(b.name));
+
+    // Estado local
+    let state = {
+        query: "",
+        matches: [],
+        selectedIndex: -1
+    };
+
+    // ==========================================
+    // DOM ELEMENTS
+    // ==========================================
+    const app = document.getElementById('plataformas-app');
+    const searchInput = document.getElementById('platform-search');
+    const dropdown = document.getElementById('search-dropdown');
+    const grid = document.getElementById('platforms-grid');
+    const modal = document.getElementById('request-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const requestInput = document.getElementById('request-input');
+    const submitRequestBtn = document.getElementById('submit-request');
+    const openRequestModalBtn = document.getElementById('open-request-modal');
+
+    // ==========================================
+    // RENDER FUNCTIONS
+    // ==========================================
+    
+    function renderGrid() {
+        grid.innerHTML = PLATFORMS.map(p => `
+            <div class="platform-card" onclick="alert('Navegando a ${p.name}')">
+                ${p.name}
+            </div>
+        `).join('');
+    }
+
+    function renderDropdown() {
+        if (state.query.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        dropdown.style.display = 'block';
+        dropdown.innerHTML = '';
+
+        if (state.matches.length > 0) {
+            // Render matches
+            const list = document.createElement('div');
+            state.matches.slice(0, 10).forEach((p, index) => { // Limit to 10
+                const item = document.createElement('div');
+                item.className = `search-result-item ${index === state.selectedIndex ? 'selected' : ''}`;
+                item.textContent = p.name;
+                item.onclick = () => selectPlatform(p.name);
+                list.appendChild(item);
+            });
+            dropdown.appendChild(list);
+        } else {
+            // Empty State
+            dropdown.innerHTML = `
+                <div class="dropdown-empty-state">
+                    <div class="empty-title">No encontramos "${escapeHtml(state.query)}"</div>
+                    <div class="empty-subtitle">Podés solicitarla y la sumamos</div>
+                    <button class="empty-cta-btn" id="empty-state-cta">Solicitar plataforma</button>
+                </div>
+            `;
+            
+            document.getElementById('empty-state-cta').onclick = () => openModal(state.query);
+        }
+    }
+
+    // ==========================================
+    // LOGIC
+    // ==========================================
+
+    function filterPlatforms(query) {
+        const normalizedQuery = normalize(query);
+        state.query = query;
+        
+        if (normalizedQuery.length < 2) {
+            state.matches = [];
+        } else {
+            state.matches = PLATFORMS.filter(p => p.searchKey.includes(normalizedQuery));
+        }
+        state.selectedIndex = -1; // Reset selection
+        renderDropdown();
+    }
+
+    function selectPlatform(name) {
+        alert(`Navegando a ${name}`);
+        searchInput.value = "";
+        filterPlatforms("");
+    }
+
+    function openModal(prefillValue = "") {
+        requestInput.value = prefillValue;
+        modal.style.display = 'flex';
+        requestInput.focus();
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    function submitRequest() {
+        const val = requestInput.value.trim();
+        if (val) {
+            alert(`Solicitud enviada para: ${val}`);
+            closeModal();
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ==========================================
+    // EVENT LISTENERS
+    // ==========================================
+
+    searchInput.addEventListener('input', (e) => {
+        filterPlatforms(e.target.value);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (!state.matches.length) {
+             if (e.key === 'Enter' && state.query.length >= 2) {
+                 // Opción: Enter abre el modal si no hay resultados? 
+                 // El usuario eligió "Enter selecciona el primer resultado si existe".
+                 // Si no existe, no hace nada o podría abrir modal. 
+                 // Por ahora no hace nada según spec "enter_select_first".
+             }
+             return;
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            state.selectedIndex = (state.selectedIndex + 1) % Math.min(state.matches.length, 10);
+            renderDropdown();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            state.selectedIndex = (state.selectedIndex - 1 + Math.min(state.matches.length, 10)) % Math.min(state.matches.length, 10);
+            renderDropdown();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const idx = state.selectedIndex === -1 ? 0 : state.selectedIndex;
+            if (state.matches[idx]) {
+                selectPlatform(state.matches[idx].name);
+            }
+        }
+    });
+
+    // Close dropdown on click outside
+    document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+    const searchContainer = document.querySelector('.search-container');
+
+    // Modal events
+    closeModalBtn.addEventListener('click', closeModal);
+    openRequestModalBtn.addEventListener('click', () => openModal(""));
+    submitRequestBtn.addEventListener('click', submitRequest);
+    
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    
+    // Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Init
+    renderGrid();
+
+})();
+</script>

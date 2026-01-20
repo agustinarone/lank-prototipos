@@ -17,6 +17,11 @@ const FEATURES = {
         path: 'features/extracciones-tupay/index.html',
         description: 'Formulario de creación de cuenta payout con selector de tipo de documento y validaciones'
     },
+    'plataformas': {
+        name: 'Buscador Plataformas',
+        path: 'features/plataformas/index.html',
+        description: 'Buscador predictivo con empty state y solicitud de nuevas plataformas'
+    },
 };
 
 // Feature por defecto
