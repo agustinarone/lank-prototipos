@@ -36,7 +36,45 @@
         </div>
     </div>
 
-    <!-- PANTALLA 2: FORMULARIO -->
+    <!-- PANTALLA 2: AUTENTICACIÓN (LOGIN/SIGNUP) -->
+    <div id="screen-auth" class="screen">
+        <div class="form-header">
+            <button class="btn-back" id="btn-back-auth">←</button>
+            <h2 class="header-title">Identificate</h2>
+        </div>
+
+        <div class="form-content">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="signin">Iniciar Sesión</button>
+                <button class="auth-tab" data-tab="signup">Registrarse</button>
+            </div>
+
+            <p class="form-intro" id="auth-intro">Ingresá a tu cuenta para reclamar el premio.</p>
+
+            <form id="auth-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="auth-email" placeholder="tucorreo@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="auth-password" placeholder="Tu contraseña" required>
+                </div>
+
+                <div class="form-group" id="signup-extra" style="display: none;">
+                    <label>Confirmar Contraseña</label>
+                    <input type="password" id="auth-password-confirm" placeholder="Repetí tu contraseña">
+                </div>
+
+                <button type="submit" class="btn-primary btn-submit" id="btn-auth-submit">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: FORMULARIO DE RECLAMO -->
     <div id="screen-form" class="screen">
         <div class="form-header">
             <button class="btn-back" id="btn-back-form">←</button>
@@ -59,7 +97,8 @@
 
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="input-email" placeholder="tucorreo@ejemplo.com" required>
+                    <input type="email" id="input-email" placeholder="tucorreo@ejemplo.com" required readonly class="input-readonly">
+                    <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; display: block;">Email asociado a tu cuenta</small>
                 </div>
 
                 <div class="form-group">
@@ -104,7 +143,7 @@
         </div>
     </div>
 
-    <!-- PANTALLA 3: CONFIRMACIÓN -->
+    <!-- PANTALLA 4: CONFIRMACIÓN -->
     <div id="screen-success" class="screen">
         <div class="success-content">
             <div class="success-icon">🎉</div>
@@ -121,6 +160,10 @@
                 <div class="ticket-row">
                     <span>Fecha:</span>
                     <span id="submission-date">--/--/--</span>
+                </div>
+                <div class="ticket-row">
+                    <span>Usuario:</span>
+                    <span id="submission-email">--</span>
                 </div>
             </div>
 
@@ -395,6 +438,41 @@
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(66, 66, 178, 0.1);
     }
+    
+    .form-group input.input-readonly {
+        background-color: #F3F4F6;
+        color: var(--text-gray);
+        border-color: #E5E7EB;
+        cursor: not-allowed;
+    }
+
+    /* Auth Screen Styles */
+    .auth-tabs {
+        display: flex;
+        background: #E5E7EB;
+        padding: 4px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+
+    .auth-tab {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+        background: var(--white);
+        color: var(--primary);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
 
     .upload-section {
         background: var(--white);
@@ -604,70 +682,136 @@
 (function() {
     // Referencias DOM
     const screenLanding = document.getElementById('screen-landing');
+    const screenAuth = document.getElementById('screen-auth');
     const screenForm = document.getElementById('screen-form');
     const screenSuccess = document.getElementById('screen-success');
     
+    // Botones
     const btnFound = document.getElementById('btn-found');
+    const btnBackAuth = document.getElementById('btn-back-auth');
     const btnBackForm = document.getElementById('btn-back-form');
     const btnSubmit = document.getElementById('btn-submit');
     const btnHome = document.getElementById('btn-home');
+    const btnAuthSubmit = document.getElementById('btn-auth-submit');
     
+    // Forms
     const form = document.getElementById('claim-form');
+    const authForm = document.getElementById('auth-form');
     const inputs = form.querySelectorAll('input');
+    const authTabs = document.querySelectorAll('.auth-tab');
     
+    // Auth elements
+    const authEmailInput = document.getElementById('auth-email');
+    const signupExtra = document.getElementById('signup-extra');
+    const authIntro = document.getElementById('auth-intro');
+    
+    // Uploads
     const uploadFront = document.getElementById('upload-front');
     const uploadBack = document.getElementById('upload-back');
     const fileFront = document.getElementById('file-front');
     const fileBack = document.getElementById('file-back');
     const previewFront = document.getElementById('preview-front');
     const previewBack = document.getElementById('preview-back');
+    
+    // Estado
+    let isLoggedIn = false;
+    let userEmail = '';
+    let isSignup = false;
 
     // 1. Lógica del Contador
     function updateCounter() {
         const counterEl = document.getElementById('days-counter');
         const startDate = new Date('2026-02-09T00:00:00');
         const today = new Date();
-        
-        // Diferencia en milisegundos
         const diffTime = today - startDate;
-        
-        // Convertir a días (redondear hacia abajo para días completos)
         let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        // Si la fecha actual es anterior al inicio, mostrar 0
         if (diffDays < 0) diffDays = 0;
-        
         counterEl.textContent = diffDays;
     }
 
-    // Inicializar contador
     updateCounter();
-    // Actualizar cada minuto por si cambia el día mientras está abierto
     setInterval(updateCounter, 60000);
 
     // 2. Navegación
     function navigateTo(screen) {
-        // Remover active de todas
-        [screenLanding, screenForm, screenSuccess].forEach(s => s.classList.remove('active'));
-        // Activar la deseada
+        [screenLanding, screenAuth, screenForm, screenSuccess].forEach(s => s.classList.remove('active'));
         screen.classList.add('active');
-        // Scroll al top
         screen.scrollTop = 0;
     }
 
-    btnFound.addEventListener('click', () => navigateTo(screenForm));
-    btnBackForm.addEventListener('click', () => navigateTo(screenLanding));
+    // Click en "Encontré el billete"
+    btnFound.addEventListener('click', () => {
+        if (isLoggedIn) {
+            navigateTo(screenForm);
+        } else {
+            navigateTo(screenAuth);
+        }
+    });
+
+    // Botones Volver
+    btnBackAuth.addEventListener('click', () => navigateTo(screenLanding));
+    btnBackForm.addEventListener('click', () => navigateTo(screenLanding)); // Volver al home si cancela form
+    
+    // Volver al inicio (reset total)
     btnHome.addEventListener('click', () => {
         form.reset();
         resetUploads();
         validateForm();
+        // Opcional: logout al finalizar? Por ahora mantenemos sesión para testing
+        // isLoggedIn = false; 
         navigateTo(screenLanding);
     });
 
-    // 3. Manejo de Archivos y Previews
+    // 3. Auth Logic
+    authTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Switch tabs
+            authTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Switch mode
+            isSignup = tab.dataset.tab === 'signup';
+            
+            // UI changes
+            if (isSignup) {
+                signupExtra.style.display = 'block';
+                btnAuthSubmit.textContent = 'Registrarse';
+                authIntro.textContent = 'Creá tu cuenta para reclamar el premio.';
+            } else {
+                signupExtra.style.display = 'none';
+                btnAuthSubmit.textContent = 'Iniciar Sesión';
+                authIntro.textContent = 'Ingresá a tu cuenta para reclamar el premio.';
+            }
+        });
+    });
+
+    authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Simular login/registro exitoso
+        userEmail = authEmailInput.value;
+        isLoggedIn = true;
+        
+        // Simular carga
+        const originalText = btnAuthSubmit.textContent;
+        btnAuthSubmit.textContent = 'Cargando...';
+        btnAuthSubmit.disabled = true;
+        
+        setTimeout(() => {
+            btnAuthSubmit.textContent = originalText;
+            btnAuthSubmit.disabled = false;
+            
+            // Prellenar form de reclamo
+            document.getElementById('input-email').value = userEmail;
+            
+            // Ir al formulario
+            navigateTo(screenForm);
+        }, 1000);
+    });
+
+    // 4. Manejo de Archivos y Previews
     function handleFileUpload(trigger, input, previewContainer, itemContainer) {
         trigger.addEventListener('click', () => input.click());
-        
         input.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -692,7 +836,7 @@
         });
     }
 
-    // 4. Validación de Formulario
+    // 5. Validación de Formulario
     function validateForm() {
         const isValid = form.checkValidity();
         const hasFront = fileFront.files.length > 0;
@@ -709,22 +853,20 @@
         input.addEventListener('input', validateForm);
     });
 
-    // 5. Envío del Formulario
+    // 6. Envío del Formulario
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        // Simular carga
         btnSubmit.textContent = 'Enviando...';
         btnSubmit.disabled = true;
         
         setTimeout(() => {
-            // Fecha actual para el resumen
             const now = new Date();
             document.getElementById('submission-date').textContent = now.toLocaleDateString('es-AR');
+            document.getElementById('submission-email').textContent = userEmail;
             
             navigateTo(screenSuccess);
             
-            // Resetear botón
             btnSubmit.textContent = 'Enviar Reclamo';
             btnSubmit.removeAttribute('disabled');
         }, 1500);
