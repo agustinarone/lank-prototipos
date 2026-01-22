@@ -1,0 +1,734 @@
+<!-- Feature: Campaña Billete de un Millón -->
+<div class="millon-feature" id="millon-app">
+    
+    <!-- PANTALLA 1: LANDING / CONTADOR -->
+    <div id="screen-landing" class="screen active">
+        <div class="millon-header">
+            <div class="header-logo">LANK</div>
+            <button class="header-help">?</button>
+        </div>
+        
+        <div class="hero-section">
+            <div class="campaign-badge">CAMPAÑA 2026</div>
+            <h1 class="hero-title">El Billete del Millón</h1>
+            <p class="hero-subtitle">Buscamos el billete de $1.000 marcado en CABA.</p>
+        </div>
+
+        <div class="counter-container">
+            <div class="counter-label">DÍAS SIN SER ENCONTRADO</div>
+            <div class="counter-value" id="days-counter">0</div>
+            <div class="counter-date">Desde el 9 de Febrero, 2026</div>
+        </div>
+
+        <div class="cta-container">
+            <button class="btn-primary btn-large" id="btn-found">
+                <span class="btn-icon">🎫</span>
+                Encontré el billete
+            </button>
+            <p class="cta-hint">¿Lo tenés vos? ¡Reclamá el premio!</p>
+        </div>
+        
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="card-icon">🎥</div>
+                <div class="card-text">Seguí las pistas en nuestros videos</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: FORMULARIO -->
+    <div id="screen-form" class="screen">
+        <div class="form-header">
+            <button class="btn-back" id="btn-back-form">←</button>
+            <h2 class="header-title">Reclamar Premio</h2>
+        </div>
+
+        <div class="form-content">
+            <p class="form-intro">Completá tus datos para validar que tenés el billete correcto.</p>
+
+            <form id="claim-form">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="input-name" placeholder="Tu nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Apellido</label>
+                    <input type="text" id="input-lastname" placeholder="Tu apellido" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="input-email" placeholder="tucorreo@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="input-phone" placeholder="11 1234 5678" required>
+                </div>
+
+                <div class="form-group">
+                    <label>DNI</label>
+                    <input type="number" id="input-dni" placeholder="Sin puntos" required>
+                </div>
+
+                <div class="upload-section">
+                    <h3 class="upload-title">Fotos del Billete</h3>
+                    <p class="upload-subtitle">Adjuntá fotos claras de ambos lados</p>
+
+                    <div class="upload-grid">
+                        <div class="upload-item" id="upload-front">
+                            <input type="file" id="file-front" accept="image/*" hidden>
+                            <div class="upload-placeholder" id="preview-front">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-label">Frente</span>
+                            </div>
+                            <div class="upload-success-badge">✓</div>
+                        </div>
+
+                        <div class="upload-item" id="upload-back">
+                            <input type="file" id="file-back" accept="image/*" hidden>
+                            <div class="upload-placeholder" id="preview-back">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-label">Dorso</span>
+                            </div>
+                            <div class="upload-success-badge">✓</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary btn-submit" id="btn-submit" disabled>
+                    Enviar Reclamo
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: CONFIRMACIÓN -->
+    <div id="screen-success" class="screen">
+        <div class="success-content">
+            <div class="success-icon">🎉</div>
+            <h2 class="success-title">¡Reclamo Enviado!</h2>
+            <p class="success-message">
+                Recibimos tus datos y las fotos del billete. Vamos a analizarlas y te contactaremos a tu email en las próximas 24hs.
+            </p>
+            
+            <div class="ticket-summary">
+                <div class="ticket-row">
+                    <span>Estado:</span>
+                    <span class="status-badge">En Revisión</span>
+                </div>
+                <div class="ticket-row">
+                    <span>Fecha:</span>
+                    <span id="submission-date">--/--/--</span>
+                </div>
+            </div>
+
+            <button class="btn-secondary" id="btn-home">Volver al inicio</button>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    /* Variables locales */
+    .millon-feature {
+        --primary: #4242B2;
+        --primary-dark: #3535a0;
+        --orange: #F5A623;
+        --orange-light: #FFF8E1;
+        --text-dark: #1F2937;
+        --text-gray: #6B7280;
+        --bg-color: #F3F4F6;
+        --white: #FFFFFF;
+        --success: #10B981;
+        
+        font-family: 'Inter', -apple-system, sans-serif;
+        background-color: var(--bg-color);
+        height: 100%;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Pantallas */
+    .screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        overflow-y: auto;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .screen.active {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Header Generico */
+    .millon-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: transparent;
+        z-index: 10;
+    }
+
+    .header-logo {
+        font-weight: 900;
+        font-size: 20px;
+        color: var(--primary);
+        letter-spacing: -1px;
+    }
+
+    .header-help {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(66, 66, 178, 0.1);
+        color: var(--primary);
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* Landing Styles */
+    #screen-landing {
+        background: linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 100%);
+    }
+
+    .hero-section {
+        padding: 20px 24px;
+        text-align: center;
+    }
+
+    .campaign-badge {
+        display: inline-block;
+        background: var(--orange-light);
+        color: var(--orange);
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        border: 1px solid rgba(245, 166, 35, 0.2);
+    }
+
+    .hero-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--text-dark);
+        line-height: 1.1;
+        margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+        font-size: 15px;
+        color: var(--text-gray);
+        line-height: 1.4;
+    }
+
+    .counter-container {
+        margin: 10px 20px 30px;
+        background: var(--white);
+        border-radius: 24px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(66, 66, 178, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .counter-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-gray);
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+    }
+
+    .counter-value {
+        font-size: 72px;
+        font-weight: 900;
+        color: var(--primary);
+        line-height: 1;
+        margin-bottom: 8px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .counter-date {
+        font-size: 13px;
+        color: var(--text-gray);
+        opacity: 0.8;
+    }
+
+    .cta-container {
+        padding: 0 24px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .btn-large {
+        width: 100%;
+        padding: 18px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 10px 20px rgba(245, 166, 35, 0.3);
+    }
+
+    .cta-hint {
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--text-gray);
+    }
+
+    .info-cards {
+        padding: 0 24px;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .card-icon {
+        font-size: 20px;
+        background: var(--white);
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark);
+        flex: 1;
+    }
+
+    /* Form Styles */
+    .form-header {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        background: var(--white);
+        border-bottom: 1px solid #E5E7EB;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    .btn-back {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-dark);
+        padding: 0;
+        margin-right: 16px;
+        cursor: pointer;
+        width: 32px;
+    }
+
+    .header-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .form-content {
+        padding: 24px 20px;
+        padding-bottom: 40px;
+    }
+
+    .form-intro {
+        font-size: 14px;
+        color: var(--text-gray);
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid #E5E7EB;
+        font-size: 15px;
+        background: var(--white);
+        transition: all 0.2s;
+        outline: none;
+    }
+
+    .form-group input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(66, 66, 178, 0.1);
+    }
+
+    .upload-section {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 24px;
+        border: 1px solid #E5E7EB;
+    }
+
+    .upload-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .upload-subtitle {
+        font-size: 13px;
+        color: var(--text-gray);
+        margin-bottom: 16px;
+    }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .upload-item {
+        position: relative;
+        aspect-ratio: 16/9;
+        cursor: pointer;
+    }
+
+    .upload-placeholder {
+        width: 100%;
+        height: 100%;
+        border: 2px dashed #D1D5DB;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #F9FAFB;
+        transition: all 0.2s;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .upload-item:active .upload-placeholder {
+        background-color: #F3F4F6;
+        border-color: var(--primary);
+    }
+
+    .upload-item.has-file .upload-placeholder {
+        border-style: solid;
+        border-color: var(--success);
+    }
+
+    .upload-item.has-file .upload-icon,
+    .upload-item.has-file .upload-label {
+        display: none;
+    }
+
+    .upload-icon {
+        font-size: 20px;
+        color: var(--text-gray);
+    }
+
+    .upload-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-gray);
+    }
+
+    .upload-success-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 20px;
+        height: 20px;
+        background: var(--success);
+        color: white;
+        border-radius: 50%;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s;
+    }
+
+    .upload-item.has-file .upload-success-badge {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: var(--orange);
+        color: var(--white);
+        border: none;
+        border-radius: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+    }
+
+    .btn-primary:active {
+        transform: scale(0.98);
+        filter: brightness(0.9);
+    }
+
+    .btn-primary:disabled {
+        background: #D1D5DB;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 14px;
+        width: 100%;
+        font-size: 15px;
+    }
+
+    /* Success Screen */
+    #screen-success {
+        background: var(--white);
+        justify-content: center;
+    }
+
+    .success-content {
+        padding: 40px 30px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .success-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .success-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 12px;
+    }
+
+    .success-message {
+        font-size: 15px;
+        color: var(--text-gray);
+        line-height: 1.5;
+        margin-bottom: 30px;
+    }
+
+    .ticket-summary {
+        background: #F3F4F6;
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    .ticket-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: var(--text-gray);
+    }
+
+    .ticket-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .status-badge {
+        background: rgba(245, 166, 35, 0.15);
+        color: var(--orange);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+</style>
+
+<script>
+(function() {
+    // Referencias DOM
+    const screenLanding = document.getElementById('screen-landing');
+    const screenForm = document.getElementById('screen-form');
+    const screenSuccess = document.getElementById('screen-success');
+    
+    const btnFound = document.getElementById('btn-found');
+    const btnBackForm = document.getElementById('btn-back-form');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnHome = document.getElementById('btn-home');
+    
+    const form = document.getElementById('claim-form');
+    const inputs = form.querySelectorAll('input');
+    
+    const uploadFront = document.getElementById('upload-front');
+    const uploadBack = document.getElementById('upload-back');
+    const fileFront = document.getElementById('file-front');
+    const fileBack = document.getElementById('file-back');
+    const previewFront = document.getElementById('preview-front');
+    const previewBack = document.getElementById('preview-back');
+
+    // 1. Lógica del Contador
+    function updateCounter() {
+        const counterEl = document.getElementById('days-counter');
+        const startDate = new Date('2026-02-09T00:00:00');
+        const today = new Date();
+        
+        // Diferencia en milisegundos
+        const diffTime = today - startDate;
+        
+        // Convertir a días (redondear hacia abajo para días completos)
+        let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Si la fecha actual es anterior al inicio, mostrar 0
+        if (diffDays < 0) diffDays = 0;
+        
+        counterEl.textContent = diffDays;
+    }
+
+    // Inicializar contador
+    updateCounter();
+    // Actualizar cada minuto por si cambia el día mientras está abierto
+    setInterval(updateCounter, 60000);
+
+    // 2. Navegación
+    function navigateTo(screen) {
+        // Remover active de todas
+        [screenLanding, screenForm, screenSuccess].forEach(s => s.classList.remove('active'));
+        // Activar la deseada
+        screen.classList.add('active');
+        // Scroll al top
+        screen.scrollTop = 0;
+    }
+
+    btnFound.addEventListener('click', () => navigateTo(screenForm));
+    btnBackForm.addEventListener('click', () => navigateTo(screenLanding));
+    btnHome.addEventListener('click', () => {
+        form.reset();
+        resetUploads();
+        validateForm();
+        navigateTo(screenLanding);
+    });
+
+    // 3. Manejo de Archivos y Previews
+    function handleFileUpload(trigger, input, previewContainer, itemContainer) {
+        trigger.addEventListener('click', () => input.click());
+        
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewContainer.style.backgroundImage = `url(${e.target.result})`;
+                    itemContainer.classList.add('has-file');
+                    validateForm();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    handleFileUpload(uploadFront, fileFront, previewFront, uploadFront);
+    handleFileUpload(uploadBack, fileBack, previewBack, uploadBack);
+
+    function resetUploads() {
+        [uploadFront, uploadBack].forEach(el => {
+            el.classList.remove('has-file');
+            el.querySelector('.upload-placeholder').style.backgroundImage = 'none';
+        });
+    }
+
+    // 4. Validación de Formulario
+    function validateForm() {
+        const isValid = form.checkValidity();
+        const hasFront = fileFront.files.length > 0;
+        const hasBack = fileBack.files.length > 0;
+        
+        if (isValid && hasFront && hasBack) {
+            btnSubmit.removeAttribute('disabled');
+        } else {
+            btnSubmit.setAttribute('disabled', 'true');
+        }
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', validateForm);
+    });
+
+    // 5. Envío del Formulario
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Simular carga
+        btnSubmit.textContent = 'Enviando...';
+        btnSubmit.disabled = true;
+        
+        setTimeout(() => {
+            // Fecha actual para el resumen
+            const now = new Date();
+            document.getElementById('submission-date').textContent = now.toLocaleDateString('es-AR');
+            
+            navigateTo(screenSuccess);
+            
+            // Resetear botón
+            btnSubmit.textContent = 'Enviar Reclamo';
+            btnSubmit.removeAttribute('disabled');
+        }, 1500);
+    });
+
+})();
+</script>

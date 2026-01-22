@@ -1,0 +1,327 @@
+<h1>Implementación: Mejora Search Bar en /plataformas</h1>
+
+<p><strong>Fecha:</strong> 20 de enero, 2026<br>
+<strong>Feature:</strong> plataformas<br>
+<strong>Ruta:</strong> features/plataformas/index.html</p>
+
+<hr>
+
+<h2>Resumen</h2>
+
+<p>Se implementó una nueva feature /plataformas que mejora la UX del buscador de plataformas con:</p>
+<ul>
+<li>Búsqueda case & accent insensitive</li>
+<li>Dropdown predictivo con empty state</li>
+<li>Modal de solicitud de nuevas plataformas</li>
+<li>Lupa decorativa (no clickeable)</li>
+</ul>
+
+<hr>
+
+<h2>Cambios Implementados</h2>
+
+<h3>1. Nueva Feature: features/plataformas/index.html</h3>
+
+<h4>Estructura HTML</h4>
+<ul>
+<li><strong>Header:</strong> Saludo personalizado + botón "Ver coronas" + logo Lank</li>
+<li><strong>Search Bar:</strong> Input con placeholder "¿Qué suscripción buscás?" + ícono de lupa a la izquierda</li>
+<li><strong>Dropdown Predictivo:</strong> Se muestra debajo del input cuando hay 2+ caracteres</li>
+<li><strong>Grid de Plataformas:</strong> Grilla de 3 columnas con cards clickeables</li>
+<li><strong>Bottom CTA:</strong> Sección "¿Buscas una suscripción que no tenemos?" con botón</li>
+<li><strong>Modal de Solicitud:</strong> Popup para recomendar nuevas plataformas</li>
+</ul>
+
+<h4>Funcionalidades JavaScript</h4>
+
+<p><strong>Normalización de texto:</strong></p>
+<pre>function normalize(text) {
+    return text
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Elimina diacríticos (á→a, ñ→n, etc.)
+        .replace(/\s+/g, " "); // Colapsa espacios múltiples
+}</pre>
+
+<p><strong>Características:</strong></p>
+<ul>
+<li>✅ Case insensitive: "NETFLIX" = "netflix" = "Netflix"</li>
+<li>✅ Accent insensitive: "estandar" = "Estándar"</li>
+<li>✅ Mantiene caracteres especiales: "Disney+" mantiene el "+"</li>
+<li>✅ Precomputa searchKey para cada plataforma al inicio</li>
+</ul>
+
+<p><strong>Filtrado:</strong></p>
+<ul>
+<li>Mínimo 2 caracteres para mostrar dropdown</li>
+<li>Máximo 10 resultados en el dropdown</li>
+<li>Búsqueda por contains (no exact match)</li>
+</ul>
+
+<p><strong>Empty State:</strong></p>
+<ul>
+<li>Si no hay resultados y hay 2+ caracteres → muestra empty state dentro del dropdown</li>
+<li>Título: No encontramos "{query}"</li>
+<li>Subtítulo: Podés solicitarla y la sumamos</li>
+<li>CTA: Solicitar plataforma → abre modal y <strong>prellena</strong> el input con la query</li>
+</ul>
+
+<p><strong>Navegación con teclado:</strong></p>
+<ul>
+<li>ArrowDown / ArrowUp: Navegar entre resultados</li>
+<li>Enter: Selecciona el primer resultado (o el seleccionado)</li>
+<li>Escape: Cierra dropdown y modal</li>
+</ul>
+
+<p><strong>Modal de Solicitud:</strong></p>
+<ul>
+<li>Se abre desde:
+  <ul>
+    <li>Empty state del dropdown (con query prellenada)</li>
+    <li>Botón inferior "¡Solicítala aquí y la creamos!"</li>
+  </ul>
+</li>
+<li>Se cierra con:
+  <ul>
+    <li>Botón "×"</li>
+    <li>Click fuera del modal</li>
+    <li>Tecla Escape</li>
+  </ul>
+</li>
+</ul>
+
+<h3>2. Registro en features-config.js</h3>
+
+<p>Se agregó la entrada:</p>
+<pre>'plataformas': {
+    name: 'Buscador Plataformas',
+    path: 'features/plataformas/index.html',
+    description: 'Buscador predictivo con empty state y solicitud de nuevas plataformas'
+}</pre>
+
+<hr>
+
+<h2>Criterios de Aceptación Verificados</h2>
+
+<table>
+<tr>
+<th>Criterio</th>
+<th>Estado</th>
+<th>Notas</th>
+</tr>
+<tr>
+<td>Case insensitive</td>
+<td>✅</td>
+<td>"NETFLIX", "netflix", "Netflix" → todos matchean</td>
+</tr>
+<tr>
+<td>Accent insensitive</td>
+<td>✅</td>
+<td>"estandar" → "Estándar"</td>
+</tr>
+<tr>
+<td>Empty state en dropdown</td>
+<td>✅</td>
+<td>Muestra mensaje + CTA cuando no hay resultados</td>
+</tr>
+<tr>
+<td>Prefill modal desde empty state</td>
+<td>✅</td>
+<td>El input del modal se prellena con la query</td>
+</tr>
+<tr>
+<td>Lupa no clickeable</td>
+<td>✅</td>
+<td>pointer-events: none, solo decorativa</td>
+</tr>
+<tr>
+<td>Input vacío sin dropdown</td>
+<td>✅</td>
+<td>No muestra dropdown si hay < 2 caracteres</td>
+</tr>
+<tr>
+<td>Enter selecciona primer resultado</td>
+<td>✅</td>
+<td>Si hay resultados, Enter navega al primero</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>Datos de Plataformas</h2>
+
+<p>El dataset incluye ~60 plataformas predefinidas en RAW_PLATFORMS:</p>
+<ul>
+<li>Streaming: Netflix, Disney+, HBO Max, Prime Video, etc.</li>
+<li>Música: Spotify, Apple Music, Tidal, etc.</li>
+<li>Software: ChatGPT, Canva Pro, Adobe, etc.</li>
+<li>Gaming: Steam, Xbox Game Pass, PlayStation Plus, etc.</li>
+</ul>
+
+<p><strong>Nota:</strong> En producción, este array debería venir de una API/backend.</p>
+
+<hr>
+
+<h2>Estilos CSS</h2>
+
+<h3>Variables principales:</h3>
+<ul>
+<li>--primary: #4242B2 (azul oscuro)</li>
+<li>--orange: #F5A623 (naranja)</li>
+<li>--bg-color: #4242B2 (fondo de la feature)</li>
+</ul>
+
+<h3>Grid de Cards:</h3>
+<ul>
+<li>3 columnas (grid-template-columns: repeat(3, 1fr))</li>
+<li>Gap: 8px</li>
+<li>Altura fija: 48px por card</li>
+<li>Font size: 11px</li>
+<li>Border radius: 6px</li>
+</ul>
+
+<h3>Search Input:</h3>
+<ul>
+<li>Altura fija: 48px</li>
+<li>Padding izquierdo: 38px (para el ícono de lupa)</li>
+<li>Font size: 15px</li>
+<li>Ícono de lupa: 20px, color gris, posición izquierda</li>
+</ul>
+
+<hr>
+
+<h2>Cómo Probar</h2>
+
+<h3>Acceso local:</h3>
+<ol>
+<li>Iniciar servidor: python3 -m http.server 8000</li>
+<li>Navegar a: http://localhost:8000/#plataformas</li>
+<li>O usar el selector de features: Cmd+K → "Buscador Plataformas"</li>
+</ol>
+
+<h3>Casos de prueba:</h3>
+
+<p><strong>1. Búsqueda case insensitive:</strong></p>
+<ul>
+<li>Escribir "NETFLIX" → debe mostrar "Netflix"</li>
+<li>Escribir "netflix" → debe mostrar "Netflix"</li>
+</ul>
+
+<p><strong>2. Búsqueda accent insensitive:</strong></p>
+<ul>
+<li>Escribir "estandar" → debe mostrar "Estándar" (si existe)</li>
+<li>Escribir "disney" → debe mostrar "Disney+"</li>
+</ul>
+
+<p><strong>3. Empty state:</strong></p>
+<ul>
+<li>Escribir "xyz123" (término que no existe)</li>
+<li>Debe aparecer dropdown con: "No encontramos 'xyz123'"</li>
+<li>Click en "Solicitar plataforma" → abre modal con "xyz123" prellenado</li>
+</ul>
+
+<p><strong>4. Lupa:</strong></p>
+<ul>
+<li>El ícono de lupa NO debe ser clickeable</li>
+<li>No debe tener hover effect ni cursor pointer</li>
+</ul>
+
+<p><strong>5. Enter key:</strong></p>
+<ul>
+<li>Escribir "netflix" → presionar Enter → debe navegar a Netflix (alert en prototipo)</li>
+</ul>
+
+<p><strong>6. Input vacío:</strong></p>
+<ul>
+<li>Borrar todo el texto → dropdown debe desaparecer</li>
+<li>La grilla debe seguir visible normalmente</li>
+</ul>
+
+<hr>
+
+<h2>Notas Técnicas</h2>
+
+<h3>Normalización de caracteres especiales:</h3>
+<ul>
+<li>ñ → n (normalización NFD)</li>
+<li>ü → u</li>
+<li>+ se mantiene (no se elimina)</li>
+<li>Espacios múltiples se colapsan a uno solo</li>
+</ul>
+
+<h3>Performance:</h3>
+<ul>
+<li>searchKey se precomputa una vez al cargar la página</li>
+<li>Filtrado es O(n) pero con dataset pequeño (~60 items) es instantáneo</li>
+<li>Dropdown limitado a 10 resultados para evitar scroll largo</li>
+</ul>
+
+<h3>Accesibilidad:</h3>
+<ul>
+<li>Input tiene autocomplete="off" para evitar interferencias del navegador</li>
+<li>Dropdown se cierra al hacer click fuera</li>
+<li>Modal se cierra con Escape</li>
+<li>Navegación por teclado (Arrow keys + Enter)</li>
+</ul>
+
+<h3>Prototipo vs Producción:</h3>
+<ul>
+<li><strong>Navegación:</strong> Actualmente muestra alert() al seleccionar una plataforma. En producción, debería navegar a una ruta real (ej: /plataformas/netflix).</li>
+<li><strong>Solicitud:</strong> El modal muestra alert() al enviar. En producción, debería hacer POST a un endpoint.</li>
+<li><strong>Datos:</strong> El array RAW_PLATFORMS es hardcodeado. En producción, debería venir de una API.</li>
+</ul>
+
+<hr>
+
+<h2>Próximos Pasos (Fuera de Scope)</h2>
+
+<ol>
+<li><strong>Backend Integration:</strong>
+   <ul>
+   <li>Endpoint para obtener lista de plataformas</li>
+   <li>Endpoint POST para solicitar nuevas plataformas</li>
+   <li>Campo search_key precomputado en base de datos</li>
+   </ul>
+</li>
+<li><strong>Navegación Real:</strong>
+   <ul>
+   <li>Reemplazar alert() por navegación real a detalle de plataforma</li>
+   <li>Implementar routing interno</li>
+   </ul>
+</li>
+<li><strong>Mejoras de UX:</strong>
+   <ul>
+   <li>Loading state mientras se busca</li>
+   <li>Debounce en el input (actualmente busca en cada keystroke)</li>
+   <li>Historial de búsquedas recientes</li>
+   </ul>
+</li>
+<li><strong>Analytics:</strong>
+   <ul>
+   <li>Trackear búsquedas sin resultados</li>
+   <li>Trackear clicks en "Solicitar plataforma"</li>
+   <li>Trackear conversión desde empty state</li>
+   </ul>
+</li>
+</ol>
+
+<hr>
+
+<h2>Archivos Modificados</h2>
+
+<ol>
+<li><strong>Nuevo:</strong> features/plataformas/index.html (feature completa)</li>
+<li><strong>Modificado:</strong> features-config.js (registro de nueva feature)</li>
+</ol>
+
+<hr>
+
+<h2>Contacto</h2>
+
+<p>Para dudas sobre la implementación, revisar:</p>
+<ul>
+<li>Spec original del producto</li>
+<li>Este documento</li>
+<li>Código en features/plataformas/index.html</li>
+</ul>

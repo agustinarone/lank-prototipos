@@ -22,6 +22,11 @@ const FEATURES = {
         path: 'features/plataformas/index.html',
         description: 'Buscador predictivo con empty state y solicitud de nuevas plataformas'
     },
+    'millon': {
+        name: 'Campaña Billete Millón',
+        path: 'features/millon/index.html',
+        description: 'Landing con contador y formulario de reclamo para la campaña del billete de un millón'
+    },
 };
 
 // Feature por defecto
